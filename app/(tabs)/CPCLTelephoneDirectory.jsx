@@ -14,12 +14,11 @@ const CPCLTelephoneDirectory = () => {
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <Icon name="arrow-back" size={24} className="text-black" />
         </TouchableOpacity>
-        <Text className="text-[#2563eb] text-2xl font-bold ">
+        <Text className="text-[#2563eb] text-2xl font-bold">
           Telephone Directory
         </Text>
         <Image source={images.smallLogo} className="w-10 h-10" />
       </View>
-      {}
     </ScrollView>
   );
 };

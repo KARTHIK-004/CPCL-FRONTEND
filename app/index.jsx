@@ -13,10 +13,11 @@ const index = () => {
       </Link>
       <Link
         href="/sign-in"
-        className="text-3xl bg-blue-200 rounded-full p-4 px-10"
+        className="text-3xl bg-blue-200 rounded-full p-4 px-10 m-10"
       >
         Sign In
       </Link>
+  
     </View>
   );
 };

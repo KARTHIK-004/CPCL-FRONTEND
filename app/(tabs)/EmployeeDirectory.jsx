@@ -9,13 +9,15 @@ const EmployeeDirectory = () => {
   const navigation = useNavigation();
   const [name, setName] = useState("");
   const [prNumber, setPrNumber] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
   const handleSearch = () => {
-    if (name || prNumber || selectedDepartment) {
+    if (name || prNumber || mobileNo || selectedDepartment) {
       navigation.navigate("SearchResult", {
         name,
         prNumber,
+        mobileNo,
         department: selectedDepartment,
       });
     } else {
@@ -37,23 +39,12 @@ const EmployeeDirectory = () => {
 
       {/* Employee Directory */}
       <View className="p-7">
-        <View className="items-center mb-2">
+        <View className="items-center mb-4">
           <Icon name="person" size={80} color="gray" />
         </View>
 
         {/* PR Number Input Field */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "white",
-            padding: 12,
-            borderWidth: 1,
-            borderColor: "#d1d5db",
-            marginBottom: 12,
-            marginTop: 16,
-          }}
-        >
+        <View className="bg-white p-3 border border-gray-300 mb-4">
           <TextInput
             style={{ flex: 1, fontSize: 16 }}
             placeholder="PR NO (4 Digits)"
@@ -68,23 +59,27 @@ const EmployeeDirectory = () => {
         <Text className="text-center text-gray-500 mb-2">Or</Text>
 
         {/* Name Input Field */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "white",
-            padding: 12,
-            borderWidth: 1,
-            borderColor: "#d1d5db",
-            marginBottom: 12,
-            marginTop: 4,
-          }}
-        >
+        <View className="bg-white p-3 border border-gray-300 mb-4">
           <TextInput
             style={{ flex: 1, fontSize: 16 }}
             placeholder="Name"
             value={name}
             onChangeText={setName}
+          />
+        </View>
+
+        {/* OR Divider */}
+        <Text className="text-center text-gray-500 mb-2">Or</Text>
+
+        {/* Mobile Number Input Field */}
+        <View className="bg-white p-3 border border-gray-300 mb-4">
+          <TextInput
+            style={{ flex: 1, fontSize: 16 }}
+            placeholder="Mobile No"
+            keyboardType="numeric"
+            maxLength={10}
+            value={mobileNo}
+            onChangeText={setMobileNo}
           />
         </View>
 
@@ -106,6 +101,8 @@ const EmployeeDirectory = () => {
             paddingHorizontal: 40,
             width: "100%",
             alignItems: "center",
+            marginTop: 20,
+            borderRadius: 6,
           }}
         >
           <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>OK</Text>
