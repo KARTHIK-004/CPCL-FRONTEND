@@ -76,12 +76,11 @@ export default function Home() {
     fetchProfileDetails();
   }, []);
 
-  // Logout Function
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("userToken");
       Alert.alert("Success", "You have been logged out.");
-      navigation.navigate("SignIn"); // Navigate to the Sign-In screen after logout
+      navigation.navigate("SignIn");
     } catch (error) {
       Alert.alert("Error", "An error occurred while logging out.");
       console.error("Logout Error: ", error);
@@ -90,65 +89,59 @@ export default function Home() {
 
   return (
     <View className="flex-1 bg-white">
-      {/* Header */}
       <View className="flex-row justify-between items-center p-8 bg-[#2563eb]">
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <Icon name="person" size={24} color="white" />
         </TouchableOpacity>
-
         <Text className="text-white text-lg font-bold">
           CPCL eServe Dashboard
         </Text>
-
-        {/* Logout Button */}
         <TouchableOpacity onPress={handleLogout}>
           <Icon name="logout" size={24} color="white" />
         </TouchableOpacity>
       </View>
 
-      {/* Main Content */}
       <ScrollView className="p-4">
         <View className="mb-4">
           <Text className="text-2xl font-bold text-blue-700">
-            Welcome back, <Text className="text-red-500">{profileDetails.name} </Text> 
+            Welcome back,{" "}
+            <Text className="text-red-500">{profileDetails?.name}</Text>
           </Text>
           <View className="bg-blue-50 p-4 mt-4 rounded-md">
-            <Text className="text-2xl font-bold text-blue-700">Daily Tips</Text>
+            <Text className="text-xl font-bold text-blue-700">Daily Tips</Text>
             <View className="bg-blue-50 p-4 mt-2 rounded-md">
               <Text className="text-blue-700">
-                <Text className="text-red-500">• </Text>
-                Start your day with a clear plan!
+                <Text className="text-red-500">• </Text> Start your day with a
+                clear plan!
               </Text>
               <Text className="text-blue-700">
-                <Text className="text-red-500">• </Text>
-                Take regular breaks to stay productive!
+                <Text className="text-red-500">• </Text> Take regular breaks to
+                stay productive!
               </Text>
               <Text className="text-blue-700">
-                <Text className="text-red-500">• </Text>
-                Stay hydrated throughout the day!
+                <Text className="text-red-500">• </Text> Stay hydrated
+                throughout the day!
               </Text>
             </View>
 
-            {/* Safety Guidelines Section */}
             <View className="mb-4">
               <Text className="text-xl font-bold text-blue-700">
                 Safety Guidelines
               </Text>
               <View className="bg-blue-50 p-4 mt-2 rounded-md">
                 <Text className="text-blue-700">
-                  <Text className="text-red-500">• </Text>
-                  Report any safety hazards immediately.
+                  <Text className="text-red-500">• </Text> Report any safety
+                  hazards immediately.
                 </Text>
                 <Text className="text-blue-700">
-                  <Text className="text-red-500">• </Text>
-                  Follow emergency protocol during any emergency.
+                  <Text className="text-red-500">• </Text> Follow emergency
+                  protocol during any emergency.
                 </Text>
               </View>
             </View>
           </View>
         </View>
 
-        {/* Quick Actions */}
         <View>
           <Text className="text-xl font-semibold text-blue-700 mb-4">
             Quick Actions
