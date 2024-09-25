@@ -1,34 +1,37 @@
 import React, { useState } from "react";
 import { Modal, Text, TouchableOpacity, View, ScrollView } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const DepartmentPicker = ({ selectedValue, onValueChange }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const departments = [
-    'Engineering',
-    'Human Resources',
-    'Finance',
-    'IT',
-    'Fire Services',
-    'Marketing',
-    'Sales',
-    'Research and Development',
-    'Legal',
-    'Quality Control',
-    'Security',
-    'Health and Safety',
-    'Training and Development',
+    "Engineering",
+    "Human Resources",
+    "Finance",
+    "IT",
+    "Fire Services",
+    "Marketing",
+    "Sales",
+    "Research and Development",
+    "Legal",
+    "Quality Control",
+    "Security",
+    "Health and Safety",
+    "Training and Development",
   ];
 
   return (
     <View>
       <TouchableOpacity
-        className="p-3 border border-gray-300 bg-white mb-3"
+        className="block w-full border border-slate-300 rounded-md mt-2 bg-white p-2 py-3 text-base"
         onPress={() => setModalVisible(true)}
       >
-        <Text className="text-lg">
-          {selectedValue || 'Select Department'}
-        </Text>
+        <View className="flex flex-row items-center justify-between">
+          <Text className="text-base">{selectedValue || "Select Department"}</Text>
+          <View className="border-l border-gray-300 h-full " />
+          <Icon name="business" className="text-blue-500" size={20} />
+        </View>
       </TouchableOpacity>
 
       {/* Modal for showing department options */}
@@ -40,7 +43,9 @@ const DepartmentPicker = ({ selectedValue, onValueChange }) => {
       >
         <View className="flex-1 justify-center items-center bg-black/50">
           <View className="w-4/5 bg-white rounded-xl p-5">
-            <Text className="text-xl mb-4">Select Department</Text>
+            <Text className="block w-full rounded-md bg-white p-2 text-base">
+              Select Department
+            </Text>
             <ScrollView>
               {departments.map((dept, index) => (
                 <TouchableOpacity
