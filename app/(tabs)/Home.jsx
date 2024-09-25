@@ -3,12 +3,14 @@ import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
+import { useRouter } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Home() {
   const navigation = useNavigation();
   const [profileDetails, setProfileDetails] = useState(null);
+  const router = useRouter();
 
   const navItems = [
     {
@@ -80,7 +82,7 @@ export default function Home() {
     try {
       await AsyncStorage.removeItem("userToken");
       Alert.alert("Success", "You have been logged out.");
-      navigation.navigate("SignIn");
+      router.push("sign-up");
     } catch (error) {
       Alert.alert("Error", "An error occurred while logging out.");
       console.error("Logout Error: ", error);
