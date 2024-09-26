@@ -61,7 +61,7 @@ export default function Home() {
           const { prno } = decodedToken;
 
           const response = await axios.get(
-            `http://192.168.56.56:3000/profile/${prno}`
+            `http://192.168.4.56:3000/profile/${prno}`
           );
           if (response.status === 200) {
             setProfileDetails(response.data.data);

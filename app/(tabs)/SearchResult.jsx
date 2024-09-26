@@ -14,7 +14,7 @@ const SearchResult = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await fetch(`http://192.168.56.56:3000/search?name=${name}&prno=${prNumber}&department=${department}`);
+        const response = await fetch(`http://192.168.4.56:3000/search?name=${name}&prno=${prNumber}&department=${department}`);
         const result = await response.json();
         if (result.status === 'ok') {
           setEmployees(result.data);

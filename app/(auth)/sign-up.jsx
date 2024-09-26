@@ -37,17 +37,8 @@ const SignUp = () => {
   };
 
   const handleSignUp = async () => {
-    if (!prNumber || !password || !captcha) {
-      Alert.alert("Error", "All fields are required!");
-      return;
-    }
-    if (captcha !== generatedCaptcha) {
-      Alert.alert("Error", "Captcha is incorrect.");
-      return;
-    }
-
     try {
-      const response = await axios.post("http://192.168.56.56:3000/signup", {
+      const response = await axios.post("http://192.168.4.56:3000/signup", {
         prno: prNumber,
         password,
       });
@@ -58,15 +49,19 @@ const SignUp = () => {
         Alert.alert("Error", "Sign-up failed! Please try again.");
       }
     } catch (error) {
-      let errorMessage = "An error occurred. Please try again.";
+      console.log("Error:", error);
       if (error.response) {
-        errorMessage = error.response.data?.message || errorMessage;
-      } else if (error.request) {
-        errorMessage = "Network Error. Please check your connection.";
+        console.log("Response data:", error.response.data);
       }
-      Alert.alert("Error", errorMessage);
+      if (error.request) {
+        console.log("Request made but no response:", error.request);
+      } else {
+        console.log("Error message:", error.message);
+      }
+      Alert.alert("Error", "Network Error. Please check your connection.");
     }
   };
+  
 
   return (
     <SafeAreaView>
