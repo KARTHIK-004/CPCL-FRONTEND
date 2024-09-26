@@ -60,12 +60,15 @@ const Profile = () => {
         <ScrollView className="p-5  ">
           <View className="bg-blue-50 rounded-lg p-4 mb-6 flex flex-col items-center">
             <View className="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center mb-4">
-              <Icon name="person" size={70} className="text-white" />
+            <Image 
+                source={{ uri: profileDetails.profile || "https://cdn-icons-png.flaticon.com/512/149/149071.png" }} 
+                className="w-full h-full rounded-full" 
+              />
             </View>
             <Text className="text-2xl font-bold mb-1 text-blue-600">
               {profileDetails.name}
             </Text>
-            <Text className="text-gray-600 mb-2">Intern</Text>
+            <Text className="text-gray-600 mb-2">{profileDetails.role}</Text>
             <Text className="text-sm bg-blue-600 text-white px-3 py-1 rounded-full">
               Employee ID: {profileDetails.prno}
             </Text>
@@ -84,7 +87,7 @@ const Profile = () => {
                 {
                   icon: "email",
                   label: "Email",
-                  value: "example@gamil.com",
+                  value: profileDetails.email,
                 },
                 {
                   icon: "cake",
@@ -124,6 +127,9 @@ const Profile = () => {
                   onPress={() => {
                     if (label === "Request Leave") {
                       navigation.navigate("LeaveRequest");
+                    }
+                    if (label === "Update ID Card") {
+                      navigation.navigate("Test");
                     }
                   }}
                   className="bg-blue-50 text-white p-4 rounded-lg flex flex-col items-center justify-center transition-colors w-[45%]"

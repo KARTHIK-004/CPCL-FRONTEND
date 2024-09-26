@@ -43,7 +43,9 @@ const SignUp = () => {
         password,
       });
       if (response.status === 200 && response.data.status === "ok") {
-        await AsyncStorage.setItem("userToken", response.data.token);
+        console.log("Token received:", response.data.token); // Log the token
+      await AsyncStorage.setItem("userToken", response.data.token);
+      console.log("Token stored successfully");
         router.push("/Home");
       } else {
         Alert.alert("Error", "Sign-up failed! Please try again.");
