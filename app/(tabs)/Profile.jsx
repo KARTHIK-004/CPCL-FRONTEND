@@ -27,7 +27,7 @@ const Profile = () => {
           const decodedToken = jwtDecode(userToken);
           const { prno } = decodedToken;
           const response = await axios.get(
-            `http://192.168.4.56:3000/profile/${prno}`
+            `http://192.168.166.56:3000/profile/${prno}`
           );
           if (response.status === 200) {
             setProfileDetails(response.data.data);

@@ -38,7 +38,7 @@ const SignUp = () => {
 
   const handleSignUp = async () => {
     try {
-      const response = await axios.post("http://192.168.4.56:3000/signup", {
+      const response = await axios.post("http://192.168.166.56:3000/signup", {
         prno: prNumber,
         password,
       });
