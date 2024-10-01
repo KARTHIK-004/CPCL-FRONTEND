@@ -120,7 +120,7 @@ const EmployeeLOP = () => {
 
       <View className="flex-1 p-4">
         <View className="bg-white rounded-lg flex-1">
-          <View className="bg-blue-600 px-4 py-5 flex-row justify-between items-center rounded-t-lg">
+          <View className="bg-blue-600 px-4 py-6 flex-row justify-between items-center rounded-lg mb-4">
             <Text className="text-xl font-semibold text-white">
               LOP Records
             </Text>
@@ -141,11 +141,11 @@ const EmployeeLOP = () => {
             <View className="flex-col">
               {/* Table Header */}
               <View className="flex-row p-5 bg-blue-50">
-                <Text className="w-28 font-bold text-gray-800">Start Date</Text>
-                <Text className="w-28 font-bold text-gray-800">End Date</Text>
-                <Text className="w-16 font-bold text-gray-800">Days</Text>
-                <Text className="w-44 font-bold text-gray-800">Reason</Text>
-                <Text className="w-24 font-bold text-gray-800">Status</Text>
+                <Text className="w-28 font-bold text-blue-600">Start Date</Text>
+                <Text className="w-28 font-bold text-blue-600">End Date</Text>
+                <Text className="w-16 font-bold text-blue-600">Days</Text>
+                <Text className="w-44 font-bold text-blue-600">Reason</Text>
+                <Text className="w-24 font-bold text-blue-600">Status</Text>
               </View>
 
               {/* Table Body */}

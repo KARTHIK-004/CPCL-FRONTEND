@@ -19,7 +19,7 @@ export default function Home() {
       icon: "person",
       screen: "EmployeeDirectory",
     },
-    { id: 2, label: "Canteen Menu", icon: "restaurant", screen: "Canteen" },
+    { id: 2, label: "Canteen Menu", icon: "restaurant", screen: "CanteenMenu" },
     {
       id: 3,
       label: "Employee LOP",
@@ -61,7 +61,7 @@ export default function Home() {
           const { prno } = decodedToken;
 
           const response = await axios.get(
-            `http://192.168.166.56:3000/profile/${prno}`
+            `http://192.168.249.56:3000/profile/${prno}`
           );
           if (response.status === 200) {
             setProfileDetails(response.data.data);
@@ -91,7 +91,7 @@ export default function Home() {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="flex-row justify-between items-center p-8 bg-[#2563eb]">
+      <View className="flex-row justify-between items-center p-8 bg-blue-600">
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <Icon name="person" size={24} color="white" />
         </TouchableOpacity>
@@ -105,33 +105,33 @@ export default function Home() {
 
       <ScrollView className="p-4">
         <View className="mb-4">
-          <Text className="text-2xl font-bold text-blue-700">
+          <Text className="text-2xl font-bold text-blue-600">
             Welcome back,{" "}
             <Text className="text-red-500">{profileDetails?.name}</Text>
           </Text>
           <View className="bg-blue-50 p-4 mt-4 rounded-md">
-            <Text className="text-xl font-bold text-blue-700">Daily Tips</Text>
+            <Text className="text-xl font-bold text-blue-600">Daily Tips</Text>
             <View className="bg-blue-50 p-4 mt-2 rounded-md">
-              <Text className="text-blue-700">
+              <Text className="text-blue-600">
                 <Text className="text-red-500">• </Text> Start your day with a
                 clear plan!
               </Text>
-              <Text className="text-blue-700">
+              <Text className="text-blue-600">
                 <Text className="text-red-500">• </Text> Take regular breaks to
                 stay productive!
               </Text>
-              <Text className="text-blue-700">
+              <Text className="text-blue-600">
                 <Text className="text-red-500">• </Text> Stay hydrated
                 throughout the day!
               </Text>
             </View>
 
             <View className="mb-4">
-              <Text className="text-xl font-bold text-blue-700">
+              <Text className="text-xl font-bold text-blue-600">
                 Safety Guidelines
               </Text>
               <View className="bg-blue-50 p-4 mt-2 rounded-md">
-                <Text className="text-blue-700">
+                <Text className="text-blue-600">
                   <Text className="text-red-500">• </Text> Report any safety
                   hazards immediately.
                 </Text>
@@ -145,7 +145,7 @@ export default function Home() {
         </View>
 
         <View>
-          <Text className="text-xl font-semibold text-blue-700 mb-4">
+          <Text className="text-xl font-semibold text-blue-600 mb-4">
             Quick Actions
           </Text>
           <View className="flex-row flex-wrap">
@@ -156,7 +156,7 @@ export default function Home() {
                 onPress={() => navigation.navigate(item.screen)}
               >
                 <Icon name={item.icon} size={32} color="#2563eb" />
-                <Text className="mt-2 text-sm font-medium text-blue-700">
+                <Text className="mt-2 text-sm font-medium text-blue-600">
                   {item.label}
                 </Text>
               </TouchableOpacity>

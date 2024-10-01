@@ -10,7 +10,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import { images } from "../../constants/images";
-import DepartmentPicker from "./DepartmentPicker";
+import { Picker } from "@react-native-picker/picker";
 
 const EmployeeDirectory = () => {
   const navigation = useNavigation();
@@ -18,6 +18,22 @@ const EmployeeDirectory = () => {
   const [prNumber, setPrNumber] = useState("");
   const [mobileNo, setMobileNo] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
+
+  const departments = [
+    "Engineering",
+    "Human Resources",
+    "Finance",
+    "IT",
+    "Fire Services",
+    "Marketing",
+    "Sales",
+    "Research and Development",
+    "Legal",
+    "Quality Control",
+    "Security",
+    "Health and Safety",
+    "Training and Development",
+  ];
 
   const handleSearch = () => {
     if (name || prNumber || mobileNo || selectedDepartment) {
@@ -35,7 +51,7 @@ const EmployeeDirectory = () => {
   return (
     <View className="bg-white flex-1">
       {/* Header */}
-      <View className="flex-row justify-between items-center p-6 bg-blue-700">
+      <View className="flex-row justify-between items-center p-6 bg-blue-600">
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <Icon name="arrow-back" size={24} className="text-white" />
         </TouchableOpacity>
@@ -47,87 +63,98 @@ const EmployeeDirectory = () => {
       </View>
 
       {/* Employee Directory */}
-
-      <ScrollView className="flex-grow container mx-auto p-5 pt-7 ">
-        <View className="p-7 bg-blue-50 ">
-          <View className="items-center">
-            <View className="-center w-26 mb-4 bg-blue-700 rounded-full">
-              <Icon name="person" size={100} color="white" />
+      <ScrollView className="flex-grow container mx-auto p-6 ">
+        <View className="py-6">
+          {/* PR Number Input Field */}
+          <View className="bg-blue-50 rounded-lg p-4 my-2">
+            <Text className="text-xl font-bold text-blue-600 mb-2">
+              PR Number :
+            </Text>
+            <View className="flex-row items-center bg-white rounded-lg">
+              <Icon name="phone" className="text-blue-600 mx-4" size={24} />
+              <View className="bg-slate-200 h-[60%] w-px" />
+              <TextInput
+                className="flex-1 p-2 pl-4"
+                placeholder="e.g. 1234"
+                keyboardType="numeric"
+                maxLength={4}
+                value={prNumber}
+                onChangeText={setPrNumber}
+              />
             </View>
           </View>
 
-          {/* PR Number Input Field */}
-          <Text className="block text-xl font-medium text-gray-700 pt-3">
-            PR NO (4 Digits) :
-          </Text>
-          <View className=" border border-slate-300 rounded-md mt-2">
-            <TextInput
-              placeholder="e.g. 1234"
-              keyboardType="numeric"
-              maxLength={4}
-              value={prNumber}
-              onChangeText={setPrNumber}
-              className="block w-full rounded-md bg-white p-2 text-base"
-            />
+          {/* OR Divider */}
+          <View className="flex flex-row items-center my-2">
+            <View className="flex-1 border-t border-gray-300" />
+            <Text className="px-2 text-sm text-gray-500">Or</Text>
+            <View className="flex-1 border-t border-gray-300" />
+          </View>
+
+          {/* Name Field */}
+          <View className="bg-blue-50 rounded-lg p-4 my-2">
+            <Text className="text-xl font-bold text-blue-600 mb-2">Name :</Text>
+            <View className="flex-row items-center bg-white rounded-lg">
+              <Icon name="person" className="text-blue-600 mx-4" size={24} />
+              <View className="bg-slate-200 h-[60%] w-px" />
+              <TextInput
+                className="flex-1 p-2 pl-4"
+                placeholder="Enter full Name"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
           </View>
 
           {/* OR Divider */}
-          <View className="flex flex-row items-center mt-3">
+          <View className="flex flex-row items-center my-2">
             <View className="flex-1 border-t border-gray-300" />
             <Text className="px-2 bg-blue-50 text-sm text-gray-500">Or</Text>
             <View className="flex-1 border-t border-gray-300" />
           </View>
 
-          {/* Name Input Field */}
-          <Text className="block text-xl font-medium text-gray-700">
-            Name :
-          </Text>
-          <View className="border border-slate-300 rounded-md mt-2">
-            <TextInput
-              placeholder="Enter full Name"
-              value={name}
-              onChangeText={setName}
-              className="block w-full rounded-md bg-white p-2 text-base"
-            />
+          {/* Phone Number Field */}
+          <View className="bg-blue-50 rounded-lg p-4 my-2">
+            <Text className="text-xl font-bold text-blue-600 mb-2">
+              Phone Number :
+            </Text>
+            <View className="flex-row items-center bg-white rounded-lg">
+              <Icon name="phone" className="text-blue-600 mx-4" size={24} />
+              <View className="bg-slate-200 h-[60%] w-px" />
+              <TextInput
+                className="flex-1 p-2 pl-4"
+                placeholder="Enter full number"
+                keyboardType="numeric"
+                maxLength={10}
+                value={mobileNo}
+                onChangeText={setMobileNo}
+              />
+            </View>
           </View>
 
           {/* OR Divider */}
-          <View className="flex flex-row items-center mt-3">
+          <View className="flex flex-row items-center my-2">
             <View className="flex-1 border-t border-gray-300" />
-            <Text className="px-2 bg-blue-50 text-sm text-gray-500">Or</Text>
-            <View className="flex-1 border-t border-gray-300" />
-          </View>
-
-          {/* Mobile Number Input Field */}
-          <Text className="block text-xl font-medium text-gray-700">
-            Mobile No :
-          </Text>
-          <View className="border border-slate-300 rounded-md mt-2">
-            <TextInput
-              placeholder="Enter Full Number"
-              keyboardType="numeric"
-              maxLength={10}
-              value={mobileNo}
-              onChangeText={setMobileNo}
-              className="block w-full rounded-md bg-white p-2 text-base"
-            />
-          </View>
-
-          {/* OR Divider */}
-          <View className="flex flex-row items-center mt-3">
-            <View className="flex-1 border-t border-gray-300" />
-            <Text className="px-2 bg-blue-50 text-sm text-gray-500">Or</Text>
+            <Text className="px-2 text-sm text-gray-500">Or</Text>
             <View className="flex-1 border-t border-gray-300" />
           </View>
 
           {/* Department Picker */}
-          <Text className="block text-xl font-medium text-gray-700">
-            Department :
-          </Text>
-          <DepartmentPicker
-            selectedValue={selectedDepartment}
-            onValueChange={setSelectedDepartment}
-          />
+          <View className="bg-blue-50 rounded-lg p-4 mb-4">
+            <Text className="text-xl font-bold text-blue-600 mb-2">
+              Department :
+            </Text>
+            <Picker
+              selectedValue={selectedDepartment}
+              onValueChange={(itemValue) => setSelectedDepartment(itemValue)}
+              style={{ backgroundColor: "white", borderRadius: 10 }}
+            >
+              <Picker.Item label="Select Department" value="" />
+              {departments.map((dept, index) => (
+                <Picker.Item key={index} label={dept} value={dept} />
+              ))}
+            </Picker>
+          </View>
 
           {/* Submit Button */}
           <TouchableOpacity

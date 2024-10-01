@@ -1,162 +1,205 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import React, { useRef, useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Linking,
+} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
-import { images } from "../../constants/images";
 import MapView, { Marker } from "react-native-maps";
+import { images } from "../../constants/images";
 
-const CPCLLocation = () => {
-  const navigation = useNavigation();
+const locations = [
+  {
+    id: 1,
+    name: "Manali Refinery",
+    address: "Manali, Chennai, Tamil Nadu 600068",
+    phone: "+91 44 2594 4000",
+    email: "manali@cpcl.co.in",
+    description: "Main refinery complex with a capacity of 10.5 MMTPA.",
+    coordinates: { latitude: 13.162068, longitude: 80.269695 }, // Example coordinates
+  },
+  {
+    id: 2,
+    name: "Cauvery Basin Refinery",
+    address: "Nagapattinam, Tamil Nadu 611002",
+    phone: "+91 4365 256 800",
+    email: "cbr@cpcl.co.in",
+    description: "Secondary refinery with a capacity of 1 MMTPA.",
+    coordinates: { latitude: 10.7663, longitude: 79.8345 }, // Example coordinates
+  },
+  {
+    id: 3,
+    name: "Corporate Office",
+    address: "536, Anna Salai, Teynampet, Chennai 600018",
+    phone: "+91 44 2434 6807",
+    email: "corporate@cpcl.co.in",
+    description: "CPCL headquarters and administrative center.",
+    coordinates: { latitude: 13.0377, longitude: 80.2634 }, // Example coordinates
+  },
+  {
+    id: 4,
+    name: "R&D Centre",
+    address: "Manali, Chennai, Tamil Nadu 600068",
+    phone: "+91 44 2594 4500",
+    email: "rnd@cpcl.co.in",
+    description:
+      "Center for innovation and technological advancements in refining.",
+    coordinates: { latitude: 13.162, longitude: 80.269 }, // Example coordinates
+  },
+];
 
+const Location = () => {
   const [selectedLocation, setSelectedLocation] = useState({
     latitude: 13.162068145057114,
     longitude: 80.26969585183697,
     title: "Corporate and Registered Office",
     description: "Chennai Petroleum Corporation Ltd",
+    address: "Manali, Chennai, Tamil Nadu 600068",
+    phone: "+91 44 2594 4000",
+    email: "manali@cpcl.co.in",
   });
 
-  const locations = [
-    {
-      title: "Corporate and Registered Office",
-      address: "#536, Anna Salai, Teyanampet",
-      city: "Chennai - 600018",
-      telephone: "EPABX-24340181",
-      fax: "-",
-      coordinates: {
-        latitude: 13.162068145057114,
-        longitude: 80.26969585183697,
-      },
-      description: "Corporate office located in Teyanampet, Chennai.",
-    },
-    {
-      title: "Refineries and Administrative Office",
-      address: "Manali",
-      city: "Chennai - 600068",
-      telephone: "EPABX-25940000-9",
-      fax: "-",
-      coordinates: { latitude: 13.161, longitude: 80.26 },
-      description: "Refinery and admin office situated in Manali.",
-    },
-    {
-      title: "Cauvery Basin Refinery",
-      address: "Panangudi, Nagapattinam Taluk",
-      city: "Nagapattinam - 611002",
-      telephone: "(04365)256416",
-      fax: "-",
-      coordinates: { latitude: 10.7668, longitude: 79.847 },
-      description: "Cauvery Basin Refinery located in Nagapattinam.",
-    },
-    {
-      title: "Additional Location",
-      address: "Another Place, Chennai",
-      city: "Chennai - 600069",
-      telephone: "EPABX-25940000-9",
-      fax: "-",
-      coordinates: { latitude: 13.16, longitude: 80.261 },
-      description: "An additional location in Chennai.",
-    },
-  ];
+  const navigation = useNavigation();
+  const mapRef = useRef(null);
 
   const handleLocationSelect = (location) => {
-    setSelectedLocation({
-      latitude: location.coordinates.latitude,
-      longitude: location.coordinates.longitude,
-      title: location.title,
-      description: location.description,
-    });
+    if (location.coordinates) {
+      setSelectedLocation({
+        latitude: location.coordinates.latitude,
+        longitude: location.coordinates.longitude,
+        title: location.name,
+        description: location.description,
+        address: location.address,
+        phone: location.phone,
+        email: location.email,
+      });
+
+      if (mapRef.current) {
+        mapRef.current.animateToRegion(
+          {
+            latitude: location.coordinates.latitude,
+            longitude: location.coordinates.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
+          1000
+        );
+      }
+    } else {
+      console.error("Coordinates not defined for this location.");
+    }
+  };
+
+  const handleGetDirections = () => {
+    const { latitude, longitude } = selectedLocation;
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
+    Linking.openURL(url);
   };
 
   return (
-    <ScrollView className="bg-white flex-1">
-      {/* Header */}
+    <View className="flex-1 bg-white">
       <View className="flex-row justify-between items-center p-6 bg-blue-600">
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-          <Icon name="arrow-back" size={24} className="text-white" />
+          <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <Text className="text-white text-2xl font-bold ">CPCL Location</Text>
         <Image source={images.smallLogo} className="w-10 h-10 " />
       </View>
-      {/* Location Items */}
-      <View className="p-5">
-        <View className="pb-5">
-          {selectedLocation && (
-            <View className="bg-blue-50 rounded-lg shadow-lg overflow-hidden">
-              <View className="p-4 bg-blue-600 text-white">
-                <Text className="text-xl font-semibold text-white">
-                  Selected Location
-                </Text>
-              </View>
-              <View className="p-4">
-                <MapView
-                  style={{ height: 300, borderRadius: 8 }}
-                  initialRegion={{
+
+      <ScrollView className="flex-1 px-4 py-8 ">
+        <View className="rounded-lg">
+          <View className="bg-blue-600 p-6 rounded-lg">
+            <Text className="text-xl font-semibold text-white">
+              CPCL Locations
+            </Text>
+          </View>
+          <View className="py-6">
+            <View className="flex-row flex-wrap justify-between ">
+              {locations.map((location) => (
+                <TouchableOpacity
+                  key={location.id}
+                  className="w-[48%] rounded-lg p-4 mb-4 bg-blue-50"
+                  onPress={() => handleLocationSelect(location)}
+                >
+                  <Text className="font-bold text-blue-600">
+                    {location.name}
+                  </Text>
+                  <Text className="text-sm text-gray-600 mt-2">
+                    {location.address.split(",")[0]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        {selectedLocation && (
+          <View className=" bg-white shadow-lg rounded-lg overflow-hidden">
+            <View className="bg-blue-600 p-6 rounded-lg">
+              <Text className="text-xl font-semibold text-white">
+                {selectedLocation.title}
+              </Text>
+            </View>
+            <View className="pb-6">
+              <MapView
+                ref={mapRef}
+                className="rounded-lg my-4"
+                style={{ height: 300, borderRadius: 8 }}
+                initialRegion={{
+                  latitude: selectedLocation.latitude,
+                  longitude: selectedLocation.longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+              >
+                <Marker
+                  coordinate={{
                     latitude: selectedLocation.latitude,
                     longitude: selectedLocation.longitude,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
                   }}
-                >
-                  <Marker
-                    coordinate={{
-                      latitude: selectedLocation.latitude,
-                      longitude: selectedLocation.longitude,
-                    }}
-                    title={selectedLocation.title}
-                    description={selectedLocation.description}
-                  />
-                </MapView>
-
-                <Text className="text-lg font-semibold text-blue-600 my-2">
-                  {selectedLocation.title}
-                </Text>
-                <Text className="text-gray-600 mb-2">
+                  title={selectedLocation.title}
+                  description={selectedLocation.description}
+                />
+              </MapView>
+              <View className="space-y-4 bg-blue-50 p-4 rounded-lg">
+                <View className="flex-row items-center">
+                  <Icon name="location-on" size={20} color="#3B82F6" />
+                  <Text className="ml-2 text-gray-700">
+                    {selectedLocation.address}
+                  </Text>
+                </View>
+                <View className="flex-row items-center">
+                  <Icon name="phone" size={20} color="#3B82F6" />
+                  <Text className="ml-2 text-gray-700">
+                    {selectedLocation.phone}
+                  </Text>
+                </View>
+                <View className="flex-row items-center">
+                  <Icon name="email" size={20} color="#3B82F6" />
+                  <Text className="ml-2 text-gray-700">
+                    {selectedLocation.email}
+                  </Text>
+                </View>
+                <Text className="text-gray-600">
                   {selectedLocation.description}
                 </Text>
-                <TouchableOpacity className="mt-4 px-20 py-4 items-center flex-row  bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150 ease-in-out ">
-                  <Icon
-                    name="pin-drop"
-                    size={20}
-                    color="white"
-                    className="mr-2"
-                  />
-                  <Text className="text-white">Get Directions</Text>
+                <TouchableOpacity
+                  onPress={handleGetDirections}
+                  className="mt-4 mb-7 bg-blue-600 rounded-lg p-4"
+                >
+                  <Text className="text-white text-center">Get Directions</Text>
                 </TouchableOpacity>
               </View>
             </View>
-          )}
-        </View>
-        {locations.map((location, index) => (
-          <TouchableOpacity
-            key={`${location.title}-${index}`}
-            onPress={() => handleLocationSelect(location)}
-            className="bg-blue-50 p-4 mb-4 shadow-lg rounded-md"
-          >
-            <Text className="text-[#2563eb] text-2xl font-extrabold mb-4 ">
-              {location.title}
-            </Text>
-            <Text className="text-gray-700 text-lg">
-              <Text className="font-bold text-lg">Address: </Text>
-              {location.address}
-            </Text>
-            <Text className="text-gray-700 text-lg">
-              <Text className="font-bold text-lg">City: </Text>
-              {location.city}
-            </Text>
-            <Text className="text-gray-700 text-lg">
-              <Text className="font-bold">Telephone: </Text>
-              {location.telephone}
-            </Text>
-            <Text className="text-gray-700 text-lg">
-              <Text className="font-bold text-lg">Fax: </Text>
-              {location.fax}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/*  */}
-    </ScrollView>
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
-export default CPCLLocation;
+export default Location;

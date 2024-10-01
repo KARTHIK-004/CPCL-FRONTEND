@@ -38,14 +38,12 @@ const SignUp = () => {
 
   const handleSignUp = async () => {
     try {
-      const response = await axios.post("http://192.168.166.56:3000/signup", {
+      const response = await axios.post("http://192.168.249.56:3000/signup", {
         prno: prNumber,
         password,
       });
       if (response.status === 200 && response.data.status === "ok") {
-        console.log("Token received:", response.data.token); // Log the token
-      await AsyncStorage.setItem("userToken", response.data.token);
-      console.log("Token stored successfully");
+        await AsyncStorage.setItem("userToken", response.data.token);
         router.push("/Home");
       } else {
         Alert.alert("Error", "Sign-up failed! Please try again.");
@@ -63,7 +61,6 @@ const SignUp = () => {
       Alert.alert("Error", "Network Error. Please check your connection.");
     }
   };
-  
 
   return (
     <SafeAreaView>

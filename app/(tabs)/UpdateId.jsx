@@ -50,7 +50,7 @@ export default function UpdateIDCard() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`http://192.168.166.56:3000/profile/${prno}`);
+        const response = await fetch(`http://192.168.249.56:3000/profile/${prno}`);
         const result = await response.json();
         if (response.ok) {
           setFormData(result.data);

@@ -79,7 +79,7 @@ const SignIn = () => {
     };
 
     axios
-      .post("http://192.168.166.56:3000/signin", userData)
+      .post("http://192.168.249.56:3000/signin", userData)
       .then((response) => {
         router.push("/sign-up");
       })

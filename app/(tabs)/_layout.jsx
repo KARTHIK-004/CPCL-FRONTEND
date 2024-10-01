@@ -8,7 +8,6 @@ const AuthLayout = () => {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" />
         <Stack.Screen name="Profile" />
-        <Stack.Screen name="Canteen" />
       </Stack>
     </View>
   );

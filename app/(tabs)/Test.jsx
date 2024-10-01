@@ -45,7 +45,7 @@ const UpdateIdCard = () => {
     department: "",
     dob: "",
     address: "",
-    photo: null, // Set to null initially
+    photo: null,
     role: "",
   });
 
@@ -136,15 +136,18 @@ const UpdateIdCard = () => {
     formDataToSubmit.append("dob", formData.dob);
     formDataToSubmit.append("address", formData.address);
     formDataToSubmit.append("role", formData.role);
-    
+
     // Only append the photo if it exists
     if (formData.photo) {
-      formDataToSubmit.append("photo", `data:image/jpeg;base64,${formData.photo}`);
+      formDataToSubmit.append(
+        "photo",
+        `data:image/jpeg;base64,${formData.photo}`
+      );
     }
 
     try {
       const response = await axios.put(
-        "http://192.168.166.56:3000/update-id-card",
+        "http://192.168.249.56:3000/update-id-card",
         formDataToSubmit,
         {
           headers: {
@@ -204,7 +207,9 @@ const UpdateIdCard = () => {
 
         {/* Email Field */}
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">Email ID :</Text>
+          <Text className="text-xl font-bold text-blue-600 mb-2">
+            Email ID :
+          </Text>
           <View className="flex-row items-center bg-white rounded-lg">
             <Icon name="email" className="text-blue-600 mx-4" size={24} />
             <View className="bg-slate-200 h-[60%] w-px" />
@@ -220,7 +225,9 @@ const UpdateIdCard = () => {
 
         {/* Phone Number Field */}
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">Phone Number :</Text>
+          <Text className="text-xl font-bold text-blue-600 mb-2">
+            Phone Number :
+          </Text>
           <View className="flex-row items-center bg-white rounded-lg">
             <Icon name="phone" className="text-blue-600 mx-4" size={24} />
             <View className="bg-slate-200 h-[60%] w-px" />
@@ -236,12 +243,20 @@ const UpdateIdCard = () => {
 
         {/* Date of Birth Field */}
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">Date of Birth :</Text>
+          <Text className="text-xl font-bold text-blue-600 mb-2">
+            Date of Birth :
+          </Text>
           <TouchableOpacity onPress={showDatePicker}>
             <View className="flex-row items-center bg-white rounded-lg py-1">
-              <Icon name="calendar-today" className="text-blue-600 mx-4" size={24} />
+              <Icon
+                name="calendar-today"
+                className="text-blue-600 mx-4"
+                size={24}
+              />
               <View className="bg-slate-200 h-[60%] w-px" />
-              <Text className="flex-1 p-2 pl-4">{formData.dob || "Select your date of birth"}</Text>
+              <Text className="flex-1 p-2 pl-4">
+                {formData.dob || "Select your date of birth"}
+              </Text>
             </View>
           </TouchableOpacity>
           {showPicker && (
@@ -256,7 +271,9 @@ const UpdateIdCard = () => {
 
         {/* Department Picker */}
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">Department :</Text>
+          <Text className="text-xl font-bold text-blue-600 mb-2">
+            Department :
+          </Text>
           <Picker
             selectedValue={formData.department}
             onValueChange={(itemValue) => handleChange("department", itemValue)}
@@ -286,7 +303,9 @@ const UpdateIdCard = () => {
 
         {/* Address Field */}
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">Address :</Text>
+          <Text className="text-xl font-bold text-blue-600 mb-2">
+            Address :
+          </Text>
           <View className="flex-row items-center bg-white rounded-lg">
             <Icon name="home" className="text-blue-600 mx-4" size={24} />
             <View className="bg-slate-200 h-[60%] w-px" />
@@ -301,7 +320,9 @@ const UpdateIdCard = () => {
 
         {/* Image Upload Section */}
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">Upload Photo :</Text>
+          <Text className="text-xl font-bold text-blue-600 mb-2">
+            Upload Photo :
+          </Text>
           <TouchableOpacity
             onPress={handleChangeImage}
             className="bg-blue-600 p-2 rounded-lg"
@@ -326,7 +347,9 @@ const UpdateIdCard = () => {
           onPress={handleSubmit}
           className="bg-blue-600 p-4 rounded-lg mb-4"
         >
-          <Text className="text-white text-center text-lg font-bold">Update ID Card</Text>
+          <Text className="text-white text-center text-lg font-bold">
+            Update ID Card
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
