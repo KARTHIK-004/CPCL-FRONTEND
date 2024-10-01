@@ -46,6 +46,18 @@ export default function Home() {
     },
     {
       id: 7,
+      label: "CPCL Retirement",
+      icon: "person",
+      screen: "Retirements",
+    },
+    {
+      id: 8,
+      label: "CPCL Birthday",
+      icon: "cake",
+      screen: "Birthdays",
+    },
+    {
+      id: 9,
       label: "CPCL Location",
       icon: "location-pin",
       screen: "CPCLLocation",

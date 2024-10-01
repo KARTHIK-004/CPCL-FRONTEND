@@ -49,7 +49,7 @@ const Profile = () => {
       {/* Header */}
       <View className="flex-row justify-between items-center p-6 bg-blue-700">
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-          <Icon name="arrow-back" size={24} className="text-white" />
+          <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <Text className="text-white text-2xl font-bold">View Profile</Text>
         <Image source={images.smallLogo} className="w-10 h-10" />
@@ -60,9 +60,13 @@ const Profile = () => {
         <ScrollView className="p-5  ">
           <View className="bg-blue-50 rounded-lg p-4 mb-6 flex flex-col items-center">
             <View className="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center mb-4">
-            <Image 
-                source={{ uri: profileDetails.profile || "https://cdn-icons-png.flaticon.com/512/149/149071.png" }} 
-                className="w-full h-full rounded-full" 
+              <Image
+                source={{
+                  uri:
+                    profileDetails.profile ||
+                    "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                }}
+                className="w-full h-full rounded-full"
               />
             </View>
             <Text className="text-2xl font-bold mb-1 text-blue-600">
@@ -100,11 +104,11 @@ const Profile = () => {
                   value: moment(profileDetails.createdAt).format("DD-MM-YYYY"),
                 },
               ].map(({ icon, label, value }, index) => (
-                <View key={index} className="flex flex-row items-center">
-                  <Icon name={icon} size={24} className="text-blue-600 mr-3" />
+                <View key={index} className="flex flex-row items-center ">
+                  <Icon name={icon} size={24} color="#2563eb" />
                   <View>
-                    <Text className="text-gray-600 text-sm">{label}</Text>
-                    <Text className="text-gray-800">{value}</Text>
+                    <Text className="text-gray-600 text-sm ml-3">{label}</Text>
+                    <Text className="text-gray-800 ml-3">{value}</Text>
                   </View>
                 </View>
               ))}
@@ -134,8 +138,8 @@ const Profile = () => {
                   }}
                   className="bg-blue-50 text-white p-4 rounded-lg flex flex-col items-center justify-center transition-colors w-[45%]"
                 >
-                  <Icon name={icon} size={24} className="mb-2 text-blue-600" />
-                  <Text className="text-sm text-center text-blue-600">
+                  <Icon name={icon} size={24} color="#2563eb" />
+                  <Text className="mt-2 text-sm text-center text-blue-600">
                     {label}
                   </Text>
                 </TouchableOpacity>
