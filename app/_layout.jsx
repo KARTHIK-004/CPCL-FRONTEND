@@ -4,10 +4,10 @@ import { Slot, Stack } from "expo-router";
 
 const RootLayout = () => {
   return (
-    <Stack initialRouteName="sign-up">
-      <Stack.Screen name="index" options={{headerShown:false}} />
-      <Stack.Screen name="(auth)" options={{headerShown:false}} />
-      <Stack.Screen name="(tabs)" options={{headerShown:false}} />
+    <Stack initialRouteName="login">
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
 };

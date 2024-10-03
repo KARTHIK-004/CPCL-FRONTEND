@@ -17,7 +17,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from "moment";
 import axios from "axios";
 
-const SignIn = () => {
+const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [prNumber, setPrNumber] = useState("");
@@ -52,7 +52,7 @@ const SignIn = () => {
     setDatePickerVisibility(false);
   };
 
-  const handleSignIn = () => {
+  const handleSignUp = () => {
     if (
       !name ||
       !prNumber ||
@@ -79,9 +79,9 @@ const SignIn = () => {
     };
 
     axios
-      .post("http://192.168.249.56:3000/signin", userData)
+      .post("http://192.168.249.56:3000/register", userData)
       .then((response) => {
-        router.push("/sign-up");
+        router.push("/Login");
       })
       .catch((error) => {
         let errorMessage = "An error occurred. Please try again.";
@@ -218,20 +218,23 @@ const SignIn = () => {
             </Picker>
           </View>
 
-          {/* Sign In Button */}
+          {/* Sign Up Button */}
           <TouchableOpacity
             className="bg-blue-600 rounded p-4 items-center mb-3"
-            onPress={handleSignIn}
+            onPress={handleSignUp}
           >
-            <Text className="text-white text-base">Sign In</Text>
+            <Text className="text-white text-base">Sign Up</Text>
           </TouchableOpacity>
 
-          {/* Link to Sign Up */}
+          {/* Link to Sign In */}
           <View className="mt-4 items-center">
             <Text>Already have an account?</Text>
-            <Link href="/sign-up">
-              <Text className="text-blue-600">Sign Up</Text>
-            </Link>
+
+            <TouchableOpacity>
+              <Link href="/Login">
+                <Text className="text-blue-600">Sign In</Text>
+              </Link>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -248,4 +251,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default Register;

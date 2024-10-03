@@ -1,11 +1,11 @@
 import React from "react";
 import { View } from "react-native";
-import SignUp from "./(auth)/sign-up";
+import Login from "./(auth)/Login";
 
 const index = () => {
   return (
     <View>
-      <SignUp />
+      <Login />
     </View>
   );
 };

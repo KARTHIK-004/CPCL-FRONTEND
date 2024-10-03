@@ -4,10 +4,10 @@ import { Stack } from "expo-router";
 
 const AuthLayout = () => {
   return (
-    <View className="flex-1 bg-slate-300">
+    <View className="flex-1">
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="sign-in" />
-        <Stack.Screen name="sign-up" />
+        <Stack.Screen name="Register" />
+        <Stack.Screen name="Login" />
       </Stack>
     </View>
   );
