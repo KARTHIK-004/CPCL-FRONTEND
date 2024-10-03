@@ -104,7 +104,7 @@ const LeaveRequest = () => {
       {/* Header */}
       <View className="flex-row justify-between items-center p-6 bg-blue-700">
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-          <Icon name="arrow-back" size={24} className="text-white" />
+          <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <Text className="text-white text-2xl font-bold">Request Leave</Text>
         <Image source={images.smallLogo} className="w-10 h-10" />
@@ -116,7 +116,12 @@ const LeaveRequest = () => {
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
           <Text className="text-xl font-bold text-blue-600 mb-2">Name :</Text>
           <View className="flex-row items-center bg-white rounded-lg">
-            <Icon name="person" className="text-blue-600 mx-4" size={24} />
+            <Icon
+              name="person"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
+            />
             <View className="bg-slate-200 h-[60%] w-px" />
             <TextInput
               className="flex-1 p-2 pl-4"
@@ -134,7 +139,8 @@ const LeaveRequest = () => {
           <View className="flex-row items-center bg-white rounded-lg">
             <Icon
               name="account-circle"
-              className="text-blue-600 mx-4"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
               size={24}
             />
             <View className="bg-slate-200 h-[60%] w-px" />
@@ -152,7 +158,12 @@ const LeaveRequest = () => {
             Phone Number :
           </Text>
           <View className="flex-row items-center bg-white rounded-lg">
-            <Icon name="phone" className="text-blue-600 mx-4" size={24} />
+            <Icon
+              name="phone"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
+            />
             <View className="bg-slate-200 h-[60%] w-px" />
             <TextInput
               className="flex-1 p-2 pl-4"
@@ -169,7 +180,12 @@ const LeaveRequest = () => {
             Manager Name :
           </Text>
           <View className="flex-row items-center bg-white rounded-lg">
-            <Icon name="person" className="text-blue-600 mx-4" size={24} />
+            <Icon
+              name="person"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
+            />
             <View className="bg-slate-200 h-[60%] w-px" />
             <TextInput
               className="flex-1 p-2 pl-4"
@@ -185,7 +201,12 @@ const LeaveRequest = () => {
             Manager Email :
           </Text>
           <View className="flex-row items-center bg-white rounded-lg">
-            <Icon name="email" className="text-blue-600 mx-4" size={24} />
+            <Icon
+              name="email"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
+            />
             <View className="bg-slate-200 h-[60%] w-px" />
             <TextInput
               className="flex-1 p-2 pl-4"
@@ -227,7 +248,8 @@ const LeaveRequest = () => {
               <View className="flex-row items-center bg-white rounded-lg">
                 <Icon
                   name="calendar-today"
-                  className="text-blue-600 mx-2"
+                  color="#2563eb"
+                  style={{ marginHorizontal: 10 }}
                   size={24}
                 />
                 <TouchableOpacity
@@ -247,6 +269,8 @@ const LeaveRequest = () => {
               <View className="flex-row items-center bg-white rounded-lg">
                 <Icon
                   name="calendar-today"
+                  color="#2563eb"
+                  style={{ marginHorizontal: 10 }}
                   className="text-blue-600 mx-2"
                   size={24}
                 />
@@ -270,7 +294,8 @@ const LeaveRequest = () => {
             <Icon
               name="text-snippet"
               size={24}
-              className="text-blue-600 mx-2 self-start"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
             />
             <TextInput
               className="flex-1 pl-2"
@@ -290,7 +315,12 @@ const LeaveRequest = () => {
           onPress={handleSubmit}
           className="w-full bg-blue-600 text-white rounded-lg py-3 flex-row justify-center items-center mb-10"
         >
-          <Icon name="send" size={18} color="white" className="mr-2" />
+          <Icon
+            name="send"
+            size={18}
+            color="white"
+            style={{ marginHorizontal: 10 }}
+          />
           <Text className="text-white text-center text-lg font-bold">
             Submit Leave Request
           </Text>

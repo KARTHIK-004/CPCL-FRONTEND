@@ -53,9 +53,8 @@ const EmployeeDirectory = () => {
       {/* Header */}
       <View className="flex-row justify-between items-center p-6 bg-blue-600">
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-          <Icon name="arrow-back" size={24} className="text-white" />
+          <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-
         <Text className="text-white text-2xl font-bold">
           Employee Directory
         </Text>
@@ -64,14 +63,19 @@ const EmployeeDirectory = () => {
 
       {/* Employee Directory */}
       <ScrollView className="flex-grow container mx-auto p-6 ">
-        <View className="py-6">
+        <View className="pb-6">
           {/* PR Number Input Field */}
           <View className="bg-blue-50 rounded-lg p-4 my-2">
             <Text className="text-xl font-bold text-blue-600 mb-2">
               PR Number :
             </Text>
-            <View className="flex-row items-center bg-white rounded-lg">
-              <Icon name="phone" className="text-blue-600 mx-4" size={24} />
+            <View className="flex-row items-center bg-white rounded-lg ">
+              <Icon
+                name="phone"
+                size={24}
+                color="#2563eb"
+                style={{ marginHorizontal: 10 }}
+              />
               <View className="bg-slate-200 h-[60%] w-px" />
               <TextInput
                 className="flex-1 p-2 pl-4"
@@ -95,7 +99,12 @@ const EmployeeDirectory = () => {
           <View className="bg-blue-50 rounded-lg p-4 my-2">
             <Text className="text-xl font-bold text-blue-600 mb-2">Name :</Text>
             <View className="flex-row items-center bg-white rounded-lg">
-              <Icon name="person" className="text-blue-600 mx-4" size={24} />
+              <Icon
+                name="person"
+                color="#2563eb"
+                style={{ marginHorizontal: 10 }}
+                size={24}
+              />
               <View className="bg-slate-200 h-[60%] w-px" />
               <TextInput
                 className="flex-1 p-2 pl-4"
@@ -119,7 +128,12 @@ const EmployeeDirectory = () => {
               Phone Number :
             </Text>
             <View className="flex-row items-center bg-white rounded-lg">
-              <Icon name="phone" className="text-blue-600 mx-4" size={24} />
+              <Icon
+                name="phone"
+                color="#2563eb"
+                style={{ marginHorizontal: 10 }}
+                size={24}
+              />
               <View className="bg-slate-200 h-[60%] w-px" />
               <TextInput
                 className="flex-1 p-2 pl-4"

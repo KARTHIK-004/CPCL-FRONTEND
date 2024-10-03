@@ -46,6 +46,8 @@ export default function TelephoneDirectory() {
   const [selectedroles, setSelectedroles] = useState([]);
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
   const [isPerPageModalVisible, setIsPerPageModalVisible] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [isEmployeeModalVisible, setIsEmployeeModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -73,13 +75,17 @@ export default function TelephoneDirectory() {
       const employeeDepartment = employee.department?.toLowerCase() || "";
       const employeeRole = employee.role?.toLowerCase() || "";
       const employeePrno = employee.prno || "";
+      const employeeMobile = employee.mobileNo || "";
+      const employeeEmail = employee.email?.toLowerCase() || "";
 
       return (
         (searchTerm === "" ||
           employeeName.includes(searchTerm.toLowerCase()) ||
           employeeDepartment.includes(searchTerm.toLowerCase()) ||
           employeeRole.includes(searchTerm.toLowerCase()) ||
-          employeePrno.includes(searchTerm)) &&
+          employeePrno.includes(searchTerm) ||
+          employeeMobile.includes(searchTerm) ||
+          employeeEmail.includes(searchTerm.toLowerCase())) &&
         (selectedDepartments.length === 0 ||
           selectedDepartments.includes(employee.department)) &&
         (selectedroles.length === 0 || selectedroles.includes(employee.role))
@@ -101,10 +107,10 @@ export default function TelephoneDirectory() {
 
   const sortedEmployees = useMemo(() => {
     return [...filteredEmployees].sort((a, b) => {
-      if (a[sortColumn] < b[sortColumn])
-        return sortDirection === "asc" ? -1 : 1;
-      if (a[sortColumn] > b[sortColumn])
-        return sortDirection === "asc" ? 1 : -1;
+      const aValue = a[sortColumn] || "";
+      const bValue = b[sortColumn] || "";
+      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
   }, [filteredEmployees, sortColumn, sortDirection]);
@@ -118,32 +124,69 @@ export default function TelephoneDirectory() {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const renderSortIcon = (column) => {
+    if (sortColumn === column) {
+      return (
+        <Icon
+          name={sortDirection === "asc" ? "arrow-upward" : "arrow-downward"}
+          size={14}
+          color="#2563eb"
+        />
+      );
+    }
+    return null;
+  };
+
+  const handleEmployeePress = (employee) => {
+    setSelectedEmployee(employee);
+    setIsEmployeeModalVisible(true);
+  };
+
   const renderEmployeeItem = ({ item }) => (
     <View className="flex-row border-b border-blue-50 p-2 items-center align-middle">
-      <View className="w-36 flex-row items-center">
+      <TouchableOpacity
+        className="w-36 flex-row items-center"
+        onPress={() => handleEmployeePress(item)}
+      >
         <Image
           source={{ uri: item.photo }}
           className="w-10 h-10 rounded-full mr-3"
         />
         <Text className="text-sm font-medium">{item.name}</Text>
-      </View>
-      <View className="w-32">
+      </TouchableOpacity>
+      <View className="w-32 flex-row items-center">
         <Text className="text-sm">{item.department}</Text>
       </View>
-      <View className="w-32">
+      <View className="w-32 flex-row items-center">
         <Text className="text-sm">{item.role}</Text>
       </View>
-      <View className="w-32">
+      <View className="w-32 flex-row items-center">
         <Text className="text-sm">{item.prno}</Text>
       </View>
-      <View className="w-32">
+      <View className="w-32 flex-row items-center">
         <Text className="text-sm">{item.mobileNo}</Text>
       </View>
-      <View className="w-56">
+      <View className="w-56 flex-row items-center">
         <Text className="text-sm text-blue-600">{item.email}</Text>
       </View>
     </View>
   );
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (users.length === 0) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>No users found.</Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-white">
@@ -168,7 +211,7 @@ export default function TelephoneDirectory() {
             <View className="relative pt-2">
               <TextInput
                 className="bg-white px-10 py-2 rounded-lg shadow-sm"
-                placeholder="Search by name, dept, role, Id..."
+                placeholder="Search by name, dept, role, Id, mobile..."
                 value={searchTerm}
                 onChangeText={setSearchTerm}
               />
@@ -205,13 +248,49 @@ export default function TelephoneDirectory() {
 
       <ScrollView horizontal className="px-4">
         <View>
-          <View className="flex-row bg-blue-50 py-2 mb-2 p-4  ">
-            <Text className="w-32 font-bold text-blue-600">Name</Text>
-            <Text className="w-32 font-bold text-blue-600">Department</Text>
-            <Text className="w-32 font-bold text-blue-600">Role</Text>
-            <Text className="w-36 font-bold text-blue-600">Employee ID</Text>
-            <Text className="w-32 font-bold text-blue-600">Mobile</Text>
-            <Text className=" font-bold text-blue-600">Email</Text>
+          <View className="flex-row bg-blue-50 py-2 mb-2 p-4">
+            <TouchableOpacity
+              className="w-32 flex-row items-center"
+              onPress={() => handleSort("name")}
+            >
+              <Text className="font-bold text-blue-600 mr-1">NAME</Text>
+              {renderSortIcon("name")}
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="w-32 flex-row items-center"
+              onPress={() => handleSort("department")}
+            >
+              <Text className="font-bold text-blue-600 mr-1">DEPARTMENT</Text>
+              {renderSortIcon("department")}
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="w-32 flex-row items-center"
+              onPress={() => handleSort("role")}
+            >
+              <Text className="font-bold text-blue-600 mr-1">ROLE</Text>
+              {renderSortIcon("role")}
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="w-32 flex-row items-center"
+              onPress={() => handleSort("prno")}
+            >
+              <Text className="font-bold text-blue-600 mr-1">EMP ID</Text>
+              {renderSortIcon("prno")}
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="w-32 flex-row items-center"
+              onPress={() => handleSort("mobileNo")}
+            >
+              <Text className="font-bold text-blue-600 mr-1">MOBILE NO</Text>
+              {renderSortIcon("mobileNo")}
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="flex-row items-center"
+              onPress={() => handleSort("email")}
+            >
+              <Text className="font-bold text-blue-600 mr-1">EMAIL</Text>
+              {renderSortIcon("email")}
+            </TouchableOpacity>
           </View>
           <FlatList
             data={currentEmployees}
@@ -291,7 +370,7 @@ export default function TelephoneDirectory() {
               </ScrollView>
             </View>
             <View className="mb-4">
-              <Text className="font-medium mb-2 text-blue-600">roles</Text>
+              <Text className="font-medium mb-2 text-blue-600">Roles</Text>
               <ScrollView className="max-h-40">
                 {roles.map((pos) => (
                   <TouchableOpacity
@@ -361,6 +440,79 @@ export default function TelephoneDirectory() {
                 </Text>
               </TouchableOpacity>
             ))}
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isEmployeeModalVisible}
+        onRequestClose={() => setIsEmployeeModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-white bg-opacity-50">
+          <View className="bg-blue-50 rounded-lg p-6 w-11/12 max-w-md">
+            {selectedEmployee && (
+              <>
+                <View className="flex-row justify-between items-center mb-4">
+                  <Text className="text-2xl font-bold text-blue-600">
+                    Employee Details
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => setIsEmployeeModalVisible(false)}
+                  >
+                    <Icon name="close" size={24} color="#4B5563" />
+                  </TouchableOpacity>
+                </View>
+                <View className="bg-blue-50 rounded-lg p-4 mb-6">
+                  <View className="bg-blue-50 rounded-lg p-4 mb-6 flex flex-col items-center">
+                    <View className="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center mb-4">
+                      <Image
+                        source={{
+                          uri:
+                            selectedEmployee.profile ||
+                            "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                        }}
+                        className="w-full h-full rounded-full"
+                      />
+                    </View>
+                    <Text className="text-2xl font-bold mb-1 text-blue-600">
+                      {selectedEmployee.name}
+                    </Text>
+                    <Text className="text-gray-600 mb-2">
+                      {selectedEmployee.role}
+                    </Text>
+                    <Text className="text-sm bg-blue-600 text-white px-3 py-1 rounded-full">
+                      Employee ID: {selectedEmployee.prno}
+                    </Text>
+                  </View>
+                  <View className="space-y-4">
+                    {[
+                      {
+                        icon: "business",
+                        label: "Department",
+                        value: selectedEmployee.department,
+                      },
+                      {
+                        icon: "email",
+                        label: "Email",
+                        value: selectedEmployee.email,
+                      },
+                    ].map(({ icon, label, value }, index) => (
+                      <View key={index} className="flex flex-row items-center ">
+                        <Icon name={icon} size={24} color="#2563eb" />
+                        <View>
+                          <Text className="text-gray-600 text-sm ml-3">
+                            {label}
+                          </Text>
+                          <Text className="text-gray-800 ml-3">{value}</Text>
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              </>
+            )}
           </View>
         </View>
       </Modal>

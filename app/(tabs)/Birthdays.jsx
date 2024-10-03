@@ -7,81 +7,55 @@ import {
   SafeAreaView,
   Image,
   TextInput,
-  ActivityIndicator,
   Alert,
   Modal,
-  ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { images } from "../../constants/images";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import axios from "axios";
 
 const Birthdays = () => {
   const navigation = useNavigation();
-  const [employees, setEmployees] = useState([]);
-  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
+  const [loading, setLoading] = useState(true);
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchUsers = async () => {
       try {
-        // Simulating API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const fetchedEmployees = [
-          {
-            id: 1,
-            name: "Anita Desai",
-            position: "Process Engineer",
-            department: "Production",
-            birthDate: "1985-09-15",
-            imageUrl: "https://randomuser.me/api/portraits/women/1.jpg",
-          },
-          {
-            id: 2,
-            name: "Rahul Sharma",
-            position: "Safety Officer",
-            department: "HSE",
-            birthDate: "1990-09-22",
-            imageUrl: "https://randomuser.me/api/portraits/men/2.jpg",
-          },
-          {
-            id: 3,
-            name: "Priya Patel",
-            position: "IT Analyst",
-            department: "Information Technology",
-            birthDate: "1988-09-30",
-            imageUrl: "https://randomuser.me/api/portraits/women/3.jpg",
-          },
-        ];
-        setEmployees(fetchedEmployees);
-        setFilteredEmployees(fetchedEmployees);
-      } catch (error) {
-        console.error("Error fetching employees:", error);
-        Alert.alert(
-          "Error",
-          "Failed to load birthday employees. Please try again later."
+        const response = await axios.get(
+          "http://192.168.249.56:3000/api/users"
         );
+        setUsers(response.data);
+      } catch (error) {
+        console.error(error);
+        Alert.alert("Error", "Failed to load users.");
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchEmployees();
+    fetchUsers();
   }, []);
 
-  useEffect(() => {
-    const filtered = employees.filter(
-      (employee) =>
-        employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        employee.department.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredEmployees(filtered);
-  }, [searchQuery, employees]);
+  const getBirthdaysThisMonth = (users) => {
+    const currentMonth = new Date().getMonth();
+    return users.filter((user) => {
+      const userBirthday = new Date(user.dob);
+      return userBirthday.getMonth() === currentMonth;
+    });
+  };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.department.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleEmployeePress = useCallback((employee) => {
     setSelectedEmployee(employee);
@@ -100,7 +74,6 @@ const Birthdays = () => {
         {
           text: "Send",
           onPress: () => {
-            console.log("Wishes sent to", employee.name);
             Alert.alert("Success", `Birthday wishes sent to ${employee.name}`);
           },
         },
@@ -115,18 +88,22 @@ const Birthdays = () => {
         onPress={() => handleEmployeePress(item)}
       >
         <Image
-          source={{ uri: item.imageUrl }}
+          source={{
+            uri:
+              item.photo ||
+              "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+          }}
           className="w-16 h-16 rounded-full mr-4"
         />
         <View className="flex-1">
           <Text className="text-lg font-semibold text-blue-600">
             {item.name}
           </Text>
-          <Text className="text-gray-600">{item.position}</Text>
+          <Text className="text-gray-600">{item.role}</Text>
           <Text className="text-gray-500">{item.department}</Text>
           <Text className="text-sm text-gray-500 mt-2">
             Birthday:{" "}
-            {new Date(item.birthDate).toLocaleDateString("en-US", {
+            {new Date(item.dob).toLocaleDateString("en-US", {
               month: "long",
               day: "numeric",
             })}
@@ -138,15 +115,17 @@ const Birthdays = () => {
     [handleEmployeePress]
   );
 
+  const birthdaysThisMonth = getBirthdaysThisMonth(filteredUsers);
+
   return (
     <SafeAreaView className="flex-1 bg-white">
+      {/* Header */}
       <View className="flex-row justify-between items-center p-6 bg-blue-600">
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-
         <Text className="text-white text-2xl font-bold">
-          Employee Retirement
+          Employee Birthdays
         </Text>
         <Image source={images.smallLogo} className="w-10 h-10" />
       </View>
@@ -157,9 +136,9 @@ const Birthdays = () => {
             Birthdays - {currentMonth} {currentYear}
           </Text>
           <View className="m-4">
-            <View className=" flex-row items-center bg-white rounded-lg ">
+            <View className="flex-row items-center bg-white rounded-lg">
               <TextInput
-                className="bg-white flex-1 px-4 py-2  rounded-lg"
+                className="bg-white flex-1 px-4 py-2 rounded-lg"
                 placeholder="Search by name or department"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -168,13 +147,16 @@ const Birthdays = () => {
             </View>
           </View>
         </View>
-        {isLoading ? (
-          <ActivityIndicator size="large" color="#3B82F6" />
+
+        {loading ? (
+          <ActivityIndicator size="large" color="#2563eb" />
         ) : (
           <FlatList
-            data={filteredEmployees}
+            data={birthdaysThisMonth}
             renderItem={renderEmployeeItem}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) =>
+              item.id ? item.id.toString() : Math.random().toString()
+            }
             ListEmptyComponent={
               <Text className="text-center text-gray-500 mt-4">
                 No birthdays found this month
@@ -190,7 +172,7 @@ const Birthdays = () => {
           <View className="flex-row justify-between mb-2">
             <Text className="text-gray-600">Total Birthdays this Month:</Text>
             <Text className="font-semibold text-blue-600">
-              {employees.length}
+              {birthdaysThisMonth.length}
             </Text>
           </View>
           <TouchableOpacity className="bg-blue-500 py-2 px-4 rounded-md mt-4">
@@ -207,26 +189,31 @@ const Birthdays = () => {
         animationType="fade"
         onRequestClose={handleCloseModal}
       >
-        <View className="flex-1 bg-black bg-opacity-50 justify-center items-center">
-          <View className="bg-white rounded-lg p-6 w-11/12 max-w-md">
+        <View className="flex-1 bg-white bg-opacity-50 justify-center items-center">
+          <View className="bg-blue-50 rounded-lg p-6 w-11/12 max-w-md">
             {selectedEmployee && (
               <>
                 <Image
-                  source={{ uri: selectedEmployee.imageUrl }}
+                  source={{
+                    uri:
+                      selectedEmployee.photo ||
+                      "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                  }}
                   className="w-32 h-32 rounded-full mx-auto mb-4"
                 />
+
                 <Text className="text-2xl font-bold text-center mb-2">
                   {selectedEmployee.name}
                 </Text>
                 <Text className="text-gray-600 text-center mb-4">
-                  {selectedEmployee.position} - {selectedEmployee.department}
+                  {selectedEmployee.role} - {selectedEmployee.department}
                 </Text>
                 <Text className="text-center mb-4">
-                  Birthday:
-                  {new Date(selectedEmployee.birthDate).toLocaleDateString(
-                    "en-US",
-                    { month: "long", day: "numeric" }
-                  )}
+                  Birthday:{" "}
+                  {new Date(selectedEmployee.dob).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </Text>
                 <TouchableOpacity
                   className="bg-blue-500 py-3 px-4 rounded-md mb-2"

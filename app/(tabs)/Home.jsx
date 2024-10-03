@@ -1,16 +1,54 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+  Alert,
+  Image,
+  Linking,
+  BackHandler,
+} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { useRouter } from "expo-router";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Carousel from "react-native-reanimated-carousel";
+import { styled } from "nativewind";
 
 export default function Home() {
   const navigation = useNavigation();
+  const width = Dimensions.get("window").width;
   const [profileDetails, setProfileDetails] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const StyledImage = styled(Image);
   const router = useRouter();
+
+  const images = [
+    {
+      uri: "https://via.placeholder.com/400x200",
+      documentUrl: "https://example.com/document1.pdf",
+    },
+    {
+      uri: "https://via.placeholder.com/400x200",
+      documentUrl: "https://example.com/document2.pdf",
+    },
+    {
+      uri: "https://via.placeholder.com/400x200",
+      documentUrl: "https://example.com/document3.pdf",
+    },
+    {
+      uri: "https://via.placeholder.com/400x200",
+      documentUrl: "https://example.com/document4.pdf",
+    },
+    {
+      uri: "https://via.placeholder.com/400x200",
+      documentUrl: "https://example.com/document5.pdf",
+    },
+  ];
 
   const navItems = [
     {
@@ -44,18 +82,8 @@ export default function Home() {
       icon: "phone",
       screen: "CPCLTelephoneDirectory",
     },
-    {
-      id: 7,
-      label: "CPCL Retirement",
-      icon: "person",
-      screen: "Retirements",
-    },
-    {
-      id: 8,
-      label: "CPCL Birthday",
-      icon: "cake",
-      screen: "Birthdays",
-    },
+    { id: 7, label: "CPCL Retirement", icon: "person", screen: "Retirements" },
+    { id: 8, label: "CPCL Birthday", icon: "cake", screen: "Birthdays" },
     {
       id: 9,
       label: "CPCL Location",
@@ -91,18 +119,70 @@ export default function Home() {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem("userToken");
-      Alert.alert("Success", "You have been logged out.");
-      router.push("sign-up");
-    } catch (error) {
-      Alert.alert("Error", "An error occurred while logging out.");
-      console.error("Logout Error: ", error);
-    }
+    Alert.alert(
+      "Logout Confirmation",
+      "Are you sure you want to log out?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem("userToken");
+              Alert.alert("Success", "You have been logged out.");
+              router.push("sign-up");
+            } catch (error) {
+              Alert.alert("Error", "An error occurred while logging out.");
+              console.error("Logout Error: ", error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
+
+  const openDocument = (url) => {
+    Linking.openURL(url).catch((err) =>
+      Alert.alert("Error", "Failed to open the document.")
+    );
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        Alert.alert(
+          "Exit Confirmation",
+          "Are you sure you want to go back to sign up page?",
+          [
+            {
+              text: "Cancel",
+              onPress: () => null,
+              style: "cancel",
+            },
+            {
+              text: "Yes",
+              onPress: () => BackHandler.exitApp(),
+            },
+          ],
+          { cancelable: false }
+        );
+        return true;
+      };
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () => {
+        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+      };
+    }, [])
+  );
 
   return (
     <View className="flex-1 bg-white">
+      {/* Header */}
       <View className="flex-row justify-between items-center p-8 bg-blue-600">
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <Icon name="person" size={24} color="white" />
@@ -114,13 +194,14 @@ export default function Home() {
           <Icon name="logout" size={24} color="white" />
         </TouchableOpacity>
       </View>
-
+      {/* Home Page */}
       <ScrollView className="p-4">
         <View className="mb-4">
           <Text className="text-2xl font-bold text-blue-600">
-            Welcome back,{" "}
+            Welcome back,
             <Text className="text-red-500">{profileDetails?.name}</Text>
           </Text>
+
           <View className="bg-blue-50 p-4 mt-4 rounded-md">
             <Text className="text-xl font-bold text-blue-600">Daily Tips</Text>
             <View className="bg-blue-50 p-4 mt-2 rounded-md">
@@ -155,8 +236,47 @@ export default function Home() {
             </View>
           </View>
         </View>
+        {/* Carousel */}
+        <View className="rounded-lg mb-2">
+          <Carousel
+            loop
+            width={width}
+            height={width / 2}
+            autoPlay={true}
+            data={images}
+            scrollAnimationDuration={1000}
+            onProgressChange={(offsetProgress, absoluteProgress) => {
+              const index = Math.round(absoluteProgress);
+              setCurrentIndex(index);
+            }}
+            renderItem={({ index }) => (
+              <TouchableOpacity
+                className="flex-1 justify-center pr-4"
+                onPress={() => openDocument(images[index].documentUrl)}
+              >
+                <StyledImage
+                  source={{ uri: images[index].uri }}
+                  className="w-full h-full rounded-lg"
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+            )}
+          />
 
+          {/* Render dots below the carousel */}
+          <View className="flex-row justify-center mt-2">
+            {images.map((_, index) => (
+              <View
+                key={index}
+                className={`h-2 w-2 rounded-full mx-1 ${
+                  currentIndex === index ? "bg-blue-500" : "bg-gray-300"
+                }`}
+              />
+            ))}
+          </View>
+        </View>
         <View>
+          {/* Quick Actions */}
           <Text className="text-xl font-semibold text-blue-600 mb-4">
             Quick Actions
           </Text>

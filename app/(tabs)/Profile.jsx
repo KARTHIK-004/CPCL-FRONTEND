@@ -77,6 +77,7 @@ const Profile = () => {
               Employee ID: {profileDetails.prno}
             </Text>
           </View>
+          {/* Profile Information */}
           <View className="bg-blue-50 rounded-lg p-4 mb-6">
             <Text className="text-xl font-bold mb-4 text-blue-600">
               Profile Information
@@ -114,6 +115,7 @@ const Profile = () => {
               ))}
             </View>
           </View>
+          {/* Quick Actions */}
           <View>
             <View className="flex flex-row items-center justify-between mb-4">
               <Text className="text-xl font-semibold text-blue-600">
@@ -133,7 +135,7 @@ const Profile = () => {
                       navigation.navigate("LeaveRequest");
                     }
                     if (label === "Update ID Card") {
-                      navigation.navigate("Test");
+                      navigation.navigate("UpdateId");
                     }
                   }}
                   className="bg-blue-50 text-white p-4 rounded-lg flex flex-col items-center justify-center transition-colors w-[45%]"

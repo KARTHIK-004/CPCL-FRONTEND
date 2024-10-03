@@ -1,22 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
+  Alert,
   TouchableOpacity,
   Image,
   ScrollView,
-  Alert,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import * as ImagePicker from "expo-image-picker";
 import { images } from "../../constants/images";
+import { Picker } from "@react-native-picker/picker";
 
-export default function UpdateIDCard() {
+const UpdateIdCard = () => {
   const navigation = useNavigation();
+
   const departments = [
     "Engineering",
     "Human Resources",
@@ -32,6 +35,7 @@ export default function UpdateIDCard() {
     "Health and Safety",
     "Training and Development",
   ];
+
   const roles = ["Admin", "Staff", "Intern", "Hr", "Manager", "Developer"];
 
   const [formData, setFormData] = useState({
@@ -39,57 +43,45 @@ export default function UpdateIDCard() {
     email: "",
     phone: "",
     department: "",
-    designation: "",
-    dateOfBirth: "",
+    dob: "",
     address: "",
     photo: null,
+    role: "",
   });
-  const [selectedRole, setSelectedRole] = useState("");
-  const [startDate, setStartDate] = useState(new Date());
+
+  const [showPicker, setShowPicker] = useState(false);
+  const [date, setDate] = useState(new Date());
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`http://192.168.249.56:3000/profile/${prno}`);
-        const result = await response.json();
-        if (response.ok) {
-          setFormData(result.data);
-        } else {
-          console.error(result.data);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem("userToken");
+      if (!token) {
+        Alert.alert("Error", "No token found, please log in again.");
+        navigation.navigate("Login");
       }
     };
 
-    fetchUserData();
-  }, [prno]);
+    checkToken();
+  }, [navigation]);
 
-  const showDateofBirthPicker = () => {
-    DateTimePickerAndroid.open({
-      value: startDate,
-      onChange: onDateChange,
-      mode: "date",
-      is24Hour: true,
-    });
+  const handleChange = (name, value) => {
+    setFormData({ ...formData, [name]: value });
   };
 
-  const onDateChange = (event, selectedDate) => {
+  const handleDateChange = (event, selectedDate) => {
+    setShowPicker(false);
     if (event.type === "set") {
-      const currentDate = selectedDate || startDate;
-      setStartDate(currentDate);
-      handleInputChange("dateOfBirth", currentDate.toLocaleDateString()); // Update dateOfBirth in formData
-    } else {
-      Alert.alert("Date Picker", "Date selection was canceled");
+      const currentDate = selectedDate || date;
+      setDate(currentDate);
+
+      // Format the selected date to YYYY-MM-DD
+      const formattedDate = currentDate.toISOString().split("T")[0];
+      handleChange("dob", formattedDate);
     }
   };
 
-  const handleInputChange = (key, value) => {
-    setFormData({ ...formData, [key]: value });
-  };
-
-  const handleSelectChange = (value) => {
-    setFormData({ ...formData, department: value });
+  const showDatePicker = () => {
+    setShowPicker(true);
   };
 
   const handleFileChange = async () => {
@@ -105,10 +97,12 @@ export default function UpdateIDCard() {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
+      base64: true, // Enable base64
     });
 
     if (!result.canceled) {
-      setFormData({ ...formData, photo: result.assets[0] });
+      // Update only the photo URI or base64 value
+      setFormData({ ...formData, photo: result.assets[0].base64 });
     }
   };
 
@@ -117,31 +111,80 @@ export default function UpdateIDCard() {
   };
 
   const handleRemoveImage = () => {
-    setFormData({ ...formData, photo: null });
+    setFormData({ ...formData, photo: null }); // Set to null when removed
   };
 
   const handleSubmit = async () => {
-    
+    const token = await AsyncStorage.getItem("userToken");
+
+    if (!token) {
+      Alert.alert("Error", "No token found, please log in again.");
+      return;
+    }
+
+    // Validate the DOB format
+    if (!formData.dob) {
+      Alert.alert("Error", "Please select a valid date of birth.");
+      return;
+    }
+
+    const formDataToSubmit = new FormData();
+    formDataToSubmit.append("name", formData.name);
+    formDataToSubmit.append("email", formData.email);
+    formDataToSubmit.append("phone", formData.phone);
+    formDataToSubmit.append("department", formData.department);
+    formDataToSubmit.append("dob", formData.dob);
+    formDataToSubmit.append("address", formData.address);
+    formDataToSubmit.append("role", formData.role);
+
+    // Only append the photo if it exists
+    if (formData.photo) {
+      formDataToSubmit.append(
+        "photo",
+        `data:image/jpeg;base64,${formData.photo}`
+      );
+    }
+
+    try {
+      const response = await axios.put(
+        "http://192.168.249.56:3000/update-id-card",
+        formDataToSubmit,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data", // Set content type for FormData
+          },
+        }
+      );
+
+      Alert.alert("Success", response.data.data);
+
+      // Navigate to the profile screen after successful update
+      navigation.navigate("Profile");
+    } catch (error) {
+      console.error("Error updating ID card:", error);
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "An error occurred while updating."
+      );
+    }
   };
-  
-  
-  
-  
 
   return (
     <View className="flex-1 bg-white">
       {/* Header */}
       <View className="flex-row justify-between items-center p-6 bg-blue-700">
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-          <Icon name="arrow-back" size={24} className="text-white" />
+          <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <Text className="text-white text-2xl font-bold">Update ID Card</Text>
         <Image source={images.smallLogo} className="w-10 h-10" />
       </View>
+
       <ScrollView className="p-5">
         <View className="bg-blue-50 rounded-lg p-4 mb-6 flex flex-col items-center">
           <View className="w-24 h-24 bg-blue-600 text-white rounded-full flex items-center justify-center mb-4">
-            <Icon name="person" size={70} className="text-white" />
+            <Icon name="person" size={70} color="white" />
           </View>
           <Text className="text-2xl font-bold mb-1 text-blue-600">
             ID Card Information
@@ -152,13 +195,18 @@ export default function UpdateIDCard() {
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
           <Text className="text-xl font-bold text-blue-600 mb-2">Name :</Text>
           <View className="flex-row items-center bg-white rounded-lg">
-            <Icon name="person" className="text-blue-600 mx-4" size={24} />
+            <Icon
+              name="person"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
+            />
             <View className="bg-slate-200 h-[60%] w-px" />
             <TextInput
               className="flex-1 p-2 pl-4"
               placeholder="Enter your full name"
               value={formData.name}
-              onChangeText={(value) => handleInputChange("name", value)}
+              onChangeText={(value) => handleChange("name", value)}
             />
           </View>
         </View>
@@ -169,13 +217,18 @@ export default function UpdateIDCard() {
             Email ID :
           </Text>
           <View className="flex-row items-center bg-white rounded-lg">
-            <Icon name="email" className="text-blue-600 mx-4" size={24} />
+            <Icon
+              name="email"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
+            />
             <View className="bg-slate-200 h-[60%] w-px" />
             <TextInput
               className="flex-1 p-2 pl-4"
               placeholder="Enter your email ID"
               value={formData.email}
-              onChangeText={(value) => handleInputChange("email", value)}
+              onChangeText={(value) => handleChange("email", value)}
               keyboardType="email-address"
             />
           </View>
@@ -187,55 +240,20 @@ export default function UpdateIDCard() {
             Phone Number :
           </Text>
           <View className="flex-row items-center bg-white rounded-lg">
-            <Icon name="phone" className="text-blue-600 mx-4" size={24} />
+            <Icon
+              name="phone"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
+            />
             <View className="bg-slate-200 h-[60%] w-px" />
             <TextInput
               className="flex-1 p-2 pl-4"
               placeholder="Enter your phone number"
               value={formData.phone}
-              onChangeText={(value) => handleInputChange("phone", value)}
+              onChangeText={(value) => handleChange("phone", value)}
               keyboardType="phone-pad"
             />
-          </View>
-        </View>
-
-        {/* Department Field */}
-        <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">
-            Department :
-          </Text>
-          <View className="bg-white rounded-lg">
-            <Picker
-              selectedValue={formData.department}
-              onValueChange={handleSelectChange}
-              className="bg-white rounded-lg"
-            >
-              <Picker.Item label="Select Department" value="" />
-              {departments.map((department, index) => (
-                <Picker.Item
-                  key={index}
-                  label={department}
-                  value={department}
-                />
-              ))}
-            </Picker>
-          </View>
-        </View>
-
-        {/* Role Field */}
-        <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">Role :</Text>
-          <View className="bg-white rounded-lg">
-            <Picker
-              selectedValue={selectedRole}
-              onValueChange={(itemValue) => setSelectedRole(itemValue)}
-              className="bg-white rounded-lg"
-            >
-              <Picker.Item label="Select Role" value="" />
-              {roles.map((role, index) => (
-                <Picker.Item key={index} label={role} value={role} />
-              ))}
-            </Picker>
           </View>
         </View>
 
@@ -244,18 +262,60 @@ export default function UpdateIDCard() {
           <Text className="text-xl font-bold text-blue-600 mb-2">
             Date of Birth :
           </Text>
-          <TouchableOpacity onPress={showDateofBirthPicker}>
-            <View className="flex-row items-center bg-white rounded-lg p-2">
+          <TouchableOpacity onPress={showDatePicker}>
+            <View className="flex-row items-center bg-white rounded-lg py-1">
               <Icon
                 name="calendar-today"
-                className="text-blue-600 mx-4"
+                color="#2563eb"
+                style={{ marginHorizontal: 10 }}
                 size={24}
               />
+              <View className="bg-slate-200 h-[60%] w-px" />
               <Text className="flex-1 p-2 pl-4">
-                {formData.dateOfBirth || "Select your date of birth"}
+                {formData.dob || "Select your date of birth"}
               </Text>
             </View>
           </TouchableOpacity>
+          {showPicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+            />
+          )}
+        </View>
+
+        {/* Department Picker */}
+        <View className="bg-blue-50 rounded-lg p-4 mb-4">
+          <Text className="text-xl font-bold text-blue-600 mb-2">
+            Department :
+          </Text>
+          <Picker
+            selectedValue={formData.department}
+            onValueChange={(itemValue) => handleChange("department", itemValue)}
+            style={{ backgroundColor: "white", borderRadius: 10 }}
+          >
+            <Picker.Item label="Select Department" value="" />
+            {departments.map((dept, index) => (
+              <Picker.Item key={index} label={dept} value={dept} />
+            ))}
+          </Picker>
+        </View>
+
+        {/* Role Picker */}
+        <View className="bg-blue-50 rounded-lg p-4 mb-4">
+          <Text className="text-xl font-bold text-blue-600 mb-2">Role :</Text>
+          <Picker
+            selectedValue={formData.role}
+            onValueChange={(itemValue) => handleChange("role", itemValue)}
+            style={{ backgroundColor: "white", borderRadius: 10 }}
+          >
+            <Picker.Item label="Select Role" value="" />
+            {roles.map((role, index) => (
+              <Picker.Item key={index} label={role} value={role} />
+            ))}
+          </Picker>
         </View>
 
         {/* Address Field */}
@@ -264,47 +324,41 @@ export default function UpdateIDCard() {
             Address :
           </Text>
           <View className="flex-row items-center bg-white rounded-lg">
-            <Icon name="home" className="text-blue-600 mx-4" size={24} />
+            <Icon
+              name="home"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
+            />
             <View className="bg-slate-200 h-[60%] w-px" />
             <TextInput
               className="flex-1 p-2 pl-4"
               placeholder="Enter your address"
               value={formData.address}
-              onChangeText={(value) => handleInputChange("address", value)}
+              onChangeText={(value) => handleChange("address", value)}
             />
           </View>
         </View>
 
-        {/* Photo Upload Section */}
+        {/* Image Upload Section */}
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">Photo :</Text>
-          <TouchableOpacity onPress={handleChangeImage}>
-            {formData.photo ? (
-              <Image
-                source={{ uri: formData.photo.uri }}
-                className="w-full h-48 rounded-lg mb-2"
-              />
-            ) : (
-              <View className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center mb-2">
-                <Text className="text-gray-600">Upload Photo</Text>
-              </View>
-            )}
+          <Text className="text-xl font-bold text-blue-600 mb-2">
+            Upload Photo :
+          </Text>
+          <TouchableOpacity
+            onPress={handleChangeImage}
+            className="bg-blue-600 p-2 rounded-lg"
+          >
+            <Text className="text-white text-center">Choose Image</Text>
           </TouchableOpacity>
           {formData.photo && (
-            <View className="mt-2 flex-row justify-between items-center w-full">
-              <TouchableOpacity
-                onPress={handleChangeImage}
-                className="flex-row items-center"
-              >
-                <Icon name="edit" size={20} className="text-blue-600 mr-2" />
-                <Text className="text-blue-600">Edit Image</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleRemoveImage}
-                className="flex-row items-center"
-              >
-                <Icon name="delete" size={20} className="text-red-600 mr-2" />
-                <Text className="text-red-600">Remove </Text>
+            <View className="mt-2">
+              <Image
+                source={{ uri: `data:image/jpeg;base64,${formData.photo}` }}
+                className="w-32 h-32 mt-2 rounded-lg"
+              />
+              <TouchableOpacity onPress={handleRemoveImage}>
+                <Text className="text-red-600 mt-2">Remove Image</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -315,11 +369,13 @@ export default function UpdateIDCard() {
           onPress={handleSubmit}
           className="bg-blue-600 p-4 rounded-lg mb-10"
         >
-          <Text className="text-white text-center text-xl font-bold">
+          <Text className="text-white text-center text-lg font-bold">
             Update ID Card
           </Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
   );
-}
+};
+
+export default UpdateIdCard;
