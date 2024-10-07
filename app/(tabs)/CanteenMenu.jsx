@@ -3,11 +3,11 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { images } from "../../constants/images";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const CanteenMenu = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const navigation = useNavigation();
 
   const menuData = [
@@ -63,16 +63,10 @@ const CanteenMenu = () => {
     },
   ];
 
-  const onDateChange = () => {
-    const currentDate = selectedDate || new Date();
-    setShowDatePicker(false);
-    setSelectedDate(currentDate);
-  };
-
   return (
     <View className="flex-1 bg-white">
       <View className="flex-row justify-between items-center p-6 bg-blue-600">
-        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
 
@@ -83,10 +77,7 @@ const CanteenMenu = () => {
         <View className="bg-white shadow-lg overflow-hidden">
           <View className="bg-blue-600 p-6 flex-row justify-between items-center rounded-lg">
             <Text className="text-xl font-semibold text-white">Food Menu</Text>
-            <TouchableOpacity
-              className="flex-row items-center space-x-2"
-              onPress={() => setShowDatePicker(true)}
-            >
+            <TouchableOpacity className="flex-row items-center space-x-2">
               <Icon name="calendar-today" size={20} color="white" />
               <Text className="text-white">
                 {selectedDate.toLocaleDateString()}
@@ -132,14 +123,6 @@ const CanteenMenu = () => {
           </View>
         </View>
       </ScrollView>
-      {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="date"
-          display="default"
-          onChange={onDateChange}
-        />
-      )}
     </View>
   );
 };

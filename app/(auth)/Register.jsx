@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { images } from "../../constants/images";
@@ -27,6 +28,7 @@ const Register = () => {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const departments = [
@@ -52,7 +54,7 @@ const Register = () => {
     setDatePickerVisibility(false);
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (
       !name ||
       !prNumber ||
@@ -67,6 +69,8 @@ const Register = () => {
       return;
     }
 
+    setIsLoading(true);
+
     const userData = {
       name,
       email,
@@ -78,20 +82,20 @@ const Register = () => {
       role: selectedRole,
     };
 
-    axios
-      .post("http://192.168.249.56:3000/register", userData)
-      .then((response) => {
-        router.push("/Login");
-      })
-      .catch((error) => {
-        let errorMessage = "An error occurred. Please try again.";
-        if (error.response) {
-          errorMessage = error.response.data?.message || errorMessage;
-        } else if (error.request) {
-          errorMessage = "Network Error. Please check your connection.";
-        }
-        Alert.alert("Error", errorMessage);
-      });
+    try {
+      await axios.post("https://cpcl.onrender.com/register", userData);
+      setIsLoading(false);
+      router.push("/Login");
+    } catch (error) {
+      setIsLoading(false);
+      let errorMessage = "An error occurred. Please try again.";
+      if (error.response) {
+        errorMessage = error.response.data?.message || errorMessage;
+      } else if (error.request) {
+        errorMessage = "Network Error. Please check your connection.";
+      }
+      Alert.alert("Error", errorMessage);
+    }
   };
 
   return (
@@ -220,10 +224,17 @@ const Register = () => {
 
           {/* Sign Up Button */}
           <TouchableOpacity
-            className="bg-blue-600 rounded p-4 items-center mb-3"
+            className={`bg-blue-600 rounded p-4 items-center mb-3 ${
+              isLoading ? "opacity-50" : ""
+            }`}
             onPress={handleSignUp}
+            disabled={isLoading}
           >
-            <Text className="text-white text-base">Sign Up</Text>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text className="text-white text-base">Sign Up</Text>
+            )}
           </TouchableOpacity>
 
           {/* Link to Sign In */}

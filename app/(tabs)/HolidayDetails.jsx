@@ -98,7 +98,7 @@ const HolidayDetails = () => {
                     onPress={() => toggleHolidayDetails(holiday.date)}
                   >
                     <View>
-                      <Text className="font-bold text-blue-700">
+                      <Text className="font-bold text-blue-600">
                         {holiday.name}
                       </Text>
                       <Text className="text-sm text-gray-500">

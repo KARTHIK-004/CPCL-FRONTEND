@@ -6,6 +6,7 @@ import {
   View,
   Image,
   Alert,
+  ActivityIndicator, // Import ActivityIndicator
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
@@ -18,6 +19,7 @@ import moment from "moment";
 const Profile = () => {
   const navigation = useNavigation();
   const [profileDetails, setProfileDetails] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchProfileDetails = async () => {
@@ -27,7 +29,7 @@ const Profile = () => {
           const decodedToken = jwtDecode(userToken);
           const { prno } = decodedToken;
           const response = await axios.get(
-            `http://192.168.249.56:3000/profile/${prno}`
+            `https://cpcl.onrender.com/profile/${prno}`
           );
           if (response.status === 200) {
             setProfileDetails(response.data.data);
@@ -38,16 +40,36 @@ const Profile = () => {
       } catch (error) {
         console.error("Error fetching profile:", error);
         Alert.alert("Error", "Failed to fetch profile details.");
+      } finally {
+        setLoading(false); // Stop loading after fetching
       }
     };
 
     fetchProfileDetails();
   }, []);
 
+  if (loading) {
+    // Render spinner while loading
+    return (
+      <View className="bg-white flex-1">
+        <View className="flex-row justify-between items-center p-6 bg-blue-600">
+          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+            <Icon name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text className="text-white text-2xl font-bold">View Profile</Text>
+          <Image source={images.smallLogo} className="w-10 h-10" />
+        </View>
+        <View className="flex-1 justify-center items-center bg-white">
+          <ActivityIndicator size="large" color="#2563eb" />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View className="bg-white flex-1">
       {/* Header */}
-      <View className="flex-row justify-between items-center p-6 bg-blue-700">
+      <View className="flex-row justify-between items-center p-6 bg-blue-600">
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>

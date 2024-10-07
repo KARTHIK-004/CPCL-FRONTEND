@@ -21,6 +21,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [captcha, setCaptcha] = useState("");
   const [generatedCaptcha, setGeneratedCaptcha] = useState(generateCaptcha());
+  const [loading, setLoading] = useState(false); // Loading state
   const router = useRouter();
 
   function generateCaptcha() {
@@ -51,8 +52,10 @@ const Login = () => {
       refreshCaptcha();
       return;
     }
+
+    setLoading(true); // Set loading state to true
     try {
-      const response = await axios.post("http://192.168.249.56:3000/login", {
+      const response = await axios.post("https://cpcl.onrender.com/login", {
         prno: prNumber,
         password,
       });
@@ -84,6 +87,8 @@ const Login = () => {
         console.log("Error message:", error.message);
         Alert.alert("Error", "Network Error. Please check your connection.");
       }
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -159,7 +164,7 @@ const Login = () => {
                 className="flex-grow bg-white rounded px-3 py-2"
               />
               <View className="flex items-center justify-center bg-white px-4 py-2 rounded-md">
-                <Text className="text-lg font-bold text-blue-700">
+                <Text className="text-lg font-bold text-blue-600">
                   {generatedCaptcha}
                 </Text>
               </View>
@@ -174,21 +179,26 @@ const Login = () => {
 
           {/* Login Button */}
           <TouchableOpacity
-            className="bg-blue-600 my-4 py-4 px-10 w-full items-center rounded-lg"
+            className={`bg-blue-600 my-4 py-4 px-10 w-full items-center rounded-lg ${
+              loading ? "opacity-50" : ""
+            }`}
             onPress={handleSignIn}
+            disabled={loading} // Disable button when loading
           >
-            <Text className="text-white text-lg font-bold">Sign In</Text>
+            <Text className="text-white text-lg font-bold">
+              {loading ? "Loading..." : "Sign In"}
+            </Text>
           </TouchableOpacity>
 
           {/* Don't have an account */}
-          <View className="flex-row items-center">
+          {/* <View className="flex-row items-center">
             <Text className="text-base">Don't have an account? </Text>
             <TouchableOpacity>
               <Link href="/Register" className="text-blue-600 ">
                 Sign up
               </Link>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </ScrollView>
     </SafeAreaView>

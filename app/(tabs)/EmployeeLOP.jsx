@@ -2,16 +2,15 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  Modal,
-  TextInput,
   TouchableOpacity,
   ScrollView,
+  TextInput,
   Image,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import { images } from "../../constants/images";
-import DateTimePicker from "@react-native-community/datetimepicker";
 
 const EmployeeLOP = () => {
   const navigation = useNavigation();
@@ -52,48 +51,26 @@ const EmployeeLOP = () => {
     reason: "",
   });
 
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-
   const calculateDays = (start, end) => {
     if (start && end) {
       const startDate = new Date(start);
       const endDate = new Date(end);
-      const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+      const diffTime = Math.abs(endDate - startDate);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
       return diffDays;
     }
     return 0;
   };
 
-  const handleStartDateChange = (event, selectedDate) => {
-    setShowStartDatePicker(false);
-    if (selectedDate) {
-      setStartDate(selectedDate);
-      setNewLOP((prev) => ({
-        ...prev,
-        startDate: selectedDate.toISOString().split("T")[0],
-        days: calculateDays(selectedDate, endDate),
-      }));
-    }
-  };
-
-  const handleEndDateChange = (event, selectedDate) => {
-    setShowEndDatePicker(false);
-    if (selectedDate) {
-      setEndDate(selectedDate);
-      setNewLOP((prev) => ({
-        ...prev,
-        endDate: selectedDate.toISOString().split("T")[0],
-        days: calculateDays(startDate, selectedDate),
-      }));
-    }
-  };
-
-  const handleInputChange = (name, value) => {
-    setNewLOP((prev) => ({ ...prev, [name]: value }));
+  const handleInputChange = (field, value) => {
+    setNewLOP((prev) => ({
+      ...prev,
+      [field]: value,
+      days:
+        field === "endDate"
+          ? calculateDays(newLOP.startDate, value)
+          : prev.days,
+    }));
   };
 
   const handleSubmit = () => {
@@ -132,14 +109,13 @@ const EmployeeLOP = () => {
               <Text className="text-blue-600">New LOP Request</Text>
             </TouchableOpacity>
           </View>
+
           {/* Scrollable Table */}
           <ScrollView
             horizontal={true}
             contentContainerStyle={{ paddingBottom: 50 }}
-            showsHorizontalScrollIndicator={true}
           >
             <View className="flex-col">
-              {/* Table Header */}
               <View className="flex-row p-5 bg-blue-50">
                 <Text className="w-28 font-bold text-blue-600">Start Date</Text>
                 <Text className="w-28 font-bold text-blue-600">End Date</Text>
@@ -147,8 +123,6 @@ const EmployeeLOP = () => {
                 <Text className="w-44 font-bold text-blue-600">Reason</Text>
                 <Text className="w-24 font-bold text-blue-600">Status</Text>
               </View>
-
-              {/* Table Body */}
               {lopRecords.map((record) => (
                 <View
                   key={record.id}
@@ -194,29 +168,20 @@ const EmployeeLOP = () => {
             <Text className="text-xl font-bold text-blue-600 mb-2">
               Start Date:
             </Text>
-            <View className="flex-row items-center bg-white rounded-lg">
+            <View className="bg-white flex-row rounded-lg p-2">
               <Icon
                 name="calendar-today"
-                className="text-blue-600 mx-2"
                 size={24}
+                color="#2563eb"
+                style={{ marginHorizontal: 10 }}
               />
-              <TouchableOpacity
-                onPress={() => setShowStartDatePicker(true)}
-                className="bg-white p-3 rounded-lg"
-              >
-                <Text>{startDate.toLocaleDateString()}</Text>
-              </TouchableOpacity>
+              <TextInput
+                className="bg-white rounded-lg px-2"
+                placeholder="YYYY-MM-DD"
+                value={newLOP.startDate}
+                onChangeText={(value) => handleInputChange("startDate", value)}
+              />
             </View>
-
-            {/* Start Date Picker */}
-            {showStartDatePicker && (
-              <DateTimePicker
-                value={startDate}
-                mode="date"
-                display="default"
-                onChange={handleStartDateChange}
-              />
-            )}
           </View>
 
           {/* End Date Section */}
@@ -224,45 +189,18 @@ const EmployeeLOP = () => {
             <Text className="text-xl font-bold text-blue-600 mb-2">
               End Date:
             </Text>
-            <View className="flex-row items-center bg-white rounded-lg">
+            <View className="bg-white flex-row rounded-lg p-2">
               <Icon
                 name="calendar-today"
-                className="text-blue-600 mx-2"
                 size={24}
-              />
-              <TouchableOpacity
-                onPress={() => setShowEndDatePicker(true)}
-                className="bg-white p-3 rounded-lg"
-              >
-                <Text>{endDate.toLocaleDateString()}</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* End Date Picker */}
-            {showEndDatePicker && (
-              <DateTimePicker
-                value={endDate}
-                mode="date"
-                display="default"
-                onChange={handleEndDateChange}
-              />
-            )}
-          </View>
-          <View className="bg-blue-50 rounded-lg p-4 mb-4">
-            <Text className="text-xl font-bold text-blue-600 mb-2">
-              Total Days:
-            </Text>
-            <View className="flex-row items-center bg-white rounded-lg">
-              <Icon
-                name="calendar-today"
-                className="text-blue-600 mx-2"
-                size={24}
+                color="#2563eb"
+                style={{ marginHorizontal: 10 }}
               />
               <TextInput
-                placeholder="Number of Days"
-                value={String(newLOP.days)}
-                editable={false}
-                className="p-3"
+                className="bg-white rounded-lg px-2"
+                placeholder="YYYY-MM-DD"
+                value={newLOP.endDate}
+                onChangeText={(value) => handleInputChange("endDate", value)}
               />
             </View>
           </View>
@@ -277,7 +215,8 @@ const EmployeeLOP = () => {
               <Icon
                 name="text-snippet"
                 size={24}
-                className="text-blue-600 mx-2 self-start"
+                color="#2563eb"
+                style={{ marginHorizontal: 10 }}
               />
               <TextInput
                 className="flex-1 pl-2"
@@ -292,6 +231,7 @@ const EmployeeLOP = () => {
             </View>
           </View>
 
+          {/* Submit */}
           <View className="flex-row justify-end mt-4">
             <TouchableOpacity
               onPress={() => setIsFormOpen(false)}

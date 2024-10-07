@@ -11,15 +11,12 @@ import {
   Image,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import { images } from "../../constants/images";
 
 const LeaveRequest = () => {
   const navigation = useNavigation();
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
   const [formData, setFormData] = useState({
     name: "",
     empId: "",
@@ -29,31 +26,9 @@ const LeaveRequest = () => {
     managerEmail: "",
     leaveType: "",
     reason: "",
+    startDate: "",
+    endDate: "",
   });
-
-  const handleStartDateChange = (event, selectedDate) => {
-    if (selectedDate) setStartDate(selectedDate);
-  };
-
-  const handleEndDateChange = (event, selectedDate) => {
-    if (selectedDate) setEndDate(selectedDate);
-  };
-
-  const showStartDatePicker = () => {
-    DateTimePickerAndroid.open({
-      value: startDate,
-      onChange: handleStartDateChange,
-      mode: "date",
-    });
-  };
-
-  const showEndDatePicker = () => {
-    DateTimePickerAndroid.open({
-      value: endDate,
-      onChange: handleEndDateChange,
-      mode: "date",
-    });
-  };
 
   const sendEmail = () => {
     if (!formData.managerEmail) {
@@ -66,8 +41,8 @@ const LeaveRequest = () => {
       Employee ID: ${formData.empId}
       Phone: ${formData.phoneNumber}
       Leave Type: ${formData.leaveType}
-      Start Date: ${startDate.toLocaleDateString()}
-      End Date: ${endDate.toLocaleDateString()}
+      Start Date: ${formData.startDate}
+      End Date: ${formData.endDate}
       Reason: ${formData.reason}
     `;
 
@@ -91,6 +66,8 @@ const LeaveRequest = () => {
       !formData.empId ||
       !formData.managerEmail ||
       !formData.leaveType ||
+      !formData.startDate ||
+      !formData.endDate ||
       !formData.reason
     ) {
       Alert.alert("Error", "Please fill in all fields.");
@@ -102,7 +79,7 @@ const LeaveRequest = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <View className="flex-row justify-between items-center p-6 bg-blue-700">
+      <View className="flex-row justify-between items-center p-6 bg-blue-600">
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
@@ -239,51 +216,47 @@ const LeaveRequest = () => {
 
         {/* Date Section */}
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <View className="flex-row items-center justify-between">
-            {/* Start Date Section */}
-            <View className="flex-1 mr-2">
-              <Text className="text-xl font-bold text-blue-600 mb-2">
-                Start Date:
-              </Text>
-              <View className="flex-row items-center bg-white rounded-lg">
-                <Icon
-                  name="calendar-today"
-                  color="#2563eb"
-                  style={{ marginHorizontal: 10 }}
-                  size={24}
-                />
-                <TouchableOpacity
-                  onPress={showStartDatePicker}
-                  className="bg-white p-3 rounded-lg"
-                >
-                  <Text>{startDate.toLocaleDateString()}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* End Date Section */}
-            <View className="flex-1">
-              <Text className="text-xl font-bold text-blue-600 mb-2">
-                End Date:
-              </Text>
-              <View className="flex-row items-center bg-white rounded-lg">
-                <Icon
-                  name="calendar-today"
-                  color="#2563eb"
-                  style={{ marginHorizontal: 10 }}
-                  className="text-blue-600 mx-2"
-                  size={24}
-                />
-                <TouchableOpacity
-                  onPress={showEndDatePicker}
-                  className="bg-white p-3 rounded-lg"
-                >
-                  <Text>{endDate.toLocaleDateString()}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+          <Text className="text-xl font-bold text-blue-600 mb-2">
+            Start Date:
+          </Text>
+          <View className="flex-row items-center bg-white rounded-lg">
+            <Icon
+              name="calendar-today"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
+            />
+            <View className="bg-slate-200 h-[60%] w-px" />
+            <TextInput
+              className="bg-white p-2 rounded-lg"
+              placeholder="YYYY-MM-DD"
+              value={formData.startDate}
+              onChangeText={(value) => handleChange("startDate", value)}
+            />
           </View>
         </View>
+
+        <View className="bg-blue-50 rounded-lg p-4 mb-4">
+          <Text className="text-xl font-bold text-blue-600 mb-2">
+            End Date:
+          </Text>
+          <View className="flex-row items-center bg-white rounded-lg">
+            <Icon
+              name="calendar-today"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
+            />
+            <View className="bg-slate-200 h-[60%] w-px" />
+            <TextInput
+              className="bg-white p-2 rounded-lg"
+              placeholder="YYYY-MM-DD"
+              value={formData.endDate}
+              onChangeText={(value) => handleChange("endDate", value)}
+            />
+          </View>
+        </View>
+
         {/* Reason for Leave */}
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
           <Text className="text-xl font-bold text-blue-600 mb-2">
@@ -298,32 +271,22 @@ const LeaveRequest = () => {
               style={{ marginHorizontal: 10 }}
             />
             <TextInput
-              className="flex-1 pl-2"
-              placeholder="Please specify your reason for leave"
+              className="flex-1 pl-4"
+              multiline
+              numberOfLines={4}
+              placeholder="Enter your reason"
               value={formData.reason}
               onChangeText={(value) => handleChange("reason", value)}
-              multiline={true}
-              numberOfLines={5}
-              textAlignVertical="top"
-              style={{ maxHeight: 100 }}
             />
           </View>
         </View>
 
         {/* Submit Button */}
         <TouchableOpacity
+          className="bg-blue-600 p-4 rounded-lg items-center mb-4"
           onPress={handleSubmit}
-          className="w-full bg-blue-600 text-white rounded-lg py-3 flex-row justify-center items-center mb-10"
         >
-          <Icon
-            name="send"
-            size={18}
-            color="white"
-            style={{ marginHorizontal: 10 }}
-          />
-          <Text className="text-white text-center text-lg font-bold">
-            Submit Leave Request
-          </Text>
+          <Text className="text-white text-lg font-bold">Submit Request</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

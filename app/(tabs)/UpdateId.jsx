@@ -11,7 +11,6 @@ import {
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import { images } from "../../constants/images";
@@ -43,14 +42,11 @@ const UpdateIdCard = () => {
     email: "",
     phone: "",
     department: "",
-    dob: "",
+    dob: "", // Keep this as is for the date of birth
     address: "",
     photo: null,
     role: "",
   });
-
-  const [showPicker, setShowPicker] = useState(false);
-  const [date, setDate] = useState(new Date());
 
   useEffect(() => {
     const checkToken = async () => {
@@ -66,22 +62,6 @@ const UpdateIdCard = () => {
 
   const handleChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
-  };
-
-  const handleDateChange = (event, selectedDate) => {
-    setShowPicker(false);
-    if (event.type === "set") {
-      const currentDate = selectedDate || date;
-      setDate(currentDate);
-
-      // Format the selected date to YYYY-MM-DD
-      const formattedDate = currentDate.toISOString().split("T")[0];
-      handleChange("dob", formattedDate);
-    }
-  };
-
-  const showDatePicker = () => {
-    setShowPicker(true);
   };
 
   const handleFileChange = async () => {
@@ -124,7 +104,7 @@ const UpdateIdCard = () => {
 
     // Validate the DOB format
     if (!formData.dob) {
-      Alert.alert("Error", "Please select a valid date of birth.");
+      Alert.alert("Error", "Please enter a valid date of birth (YYYY-MM-DD).");
       return;
     }
 
@@ -147,7 +127,7 @@ const UpdateIdCard = () => {
 
     try {
       const response = await axios.put(
-        "http://192.168.249.56:3000/update-id-card",
+        "https://cpcl.onrender.com/update-id-card",
         formDataToSubmit,
         {
           headers: {
@@ -173,7 +153,7 @@ const UpdateIdCard = () => {
   return (
     <View className="flex-1 bg-white">
       {/* Header */}
-      <View className="flex-row justify-between items-center p-6 bg-blue-700">
+      <View className="flex-row justify-between items-center p-6 bg-blue-600">
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
@@ -262,28 +242,37 @@ const UpdateIdCard = () => {
           <Text className="text-xl font-bold text-blue-600 mb-2">
             Date of Birth :
           </Text>
-          <TouchableOpacity onPress={showDatePicker}>
-            <View className="flex-row items-center bg-white rounded-lg py-1">
-              <Icon
-                name="calendar-today"
-                color="#2563eb"
-                style={{ marginHorizontal: 10 }}
-                size={24}
-              />
-              <View className="bg-slate-200 h-[60%] w-px" />
-              <Text className="flex-1 p-2 pl-4">
-                {formData.dob || "Select your date of birth"}
-              </Text>
-            </View>
-          </TouchableOpacity>
-          {showPicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="default"
-              onChange={handleDateChange}
+          <View className="flex-row items-center bg-white rounded-lg">
+            <Icon
+              name="calendar-today"
+              color="#2563eb"
+              style={{ marginHorizontal: 10 }}
+              size={24}
             />
-          )}
+            <View className="bg-slate-200 h-[60%] w-px" />
+            <TextInput
+              className="flex-1 p-2 pl-4"
+              placeholder="YYYY-MM-DD"
+              value={formData.dob}
+              onChangeText={(value) => handleChange("dob", value)}
+            />
+          </View>
+        </View>
+
+        {/* Role Picker */}
+        <View className="bg-blue-50 rounded-lg p-4 mb-4">
+          <Text className="text-xl font-bold text-blue-600 mb-2">Role :</Text>
+          <View className="bg-white rounded-lg">
+            <Picker
+              selectedValue={formData.role}
+              onValueChange={(value) => handleChange("role", value)}
+            >
+              <Picker.Item label="Select your role" value="" />
+              {roles.map((role, index) => (
+                <Picker.Item key={index} label={role} value={role} />
+              ))}
+            </Picker>
+          </View>
         </View>
 
         {/* Department Picker */}
@@ -291,31 +280,17 @@ const UpdateIdCard = () => {
           <Text className="text-xl font-bold text-blue-600 mb-2">
             Department :
           </Text>
-          <Picker
-            selectedValue={formData.department}
-            onValueChange={(itemValue) => handleChange("department", itemValue)}
-            style={{ backgroundColor: "white", borderRadius: 10 }}
-          >
-            <Picker.Item label="Select Department" value="" />
-            {departments.map((dept, index) => (
-              <Picker.Item key={index} label={dept} value={dept} />
-            ))}
-          </Picker>
-        </View>
-
-        {/* Role Picker */}
-        <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">Role :</Text>
-          <Picker
-            selectedValue={formData.role}
-            onValueChange={(itemValue) => handleChange("role", itemValue)}
-            style={{ backgroundColor: "white", borderRadius: 10 }}
-          >
-            <Picker.Item label="Select Role" value="" />
-            {roles.map((role, index) => (
-              <Picker.Item key={index} label={role} value={role} />
-            ))}
-          </Picker>
+          <View className="bg-white rounded-lg">
+            <Picker
+              selectedValue={formData.department}
+              onValueChange={(value) => handleChange("department", value)}
+            >
+              <Picker.Item label="Select your department" value="" />
+              {departments.map((dept, index) => (
+                <Picker.Item key={index} label={dept} value={dept} />
+              ))}
+            </Picker>
+          </View>
         </View>
 
         {/* Address Field */}
@@ -340,34 +315,27 @@ const UpdateIdCard = () => {
           </View>
         </View>
 
-        {/* Image Upload Section */}
+        {/* Image Picker */}
         <View className="bg-blue-50 rounded-lg p-4 mb-4">
-          <Text className="text-xl font-bold text-blue-600 mb-2">
-            Upload Photo :
-          </Text>
           <TouchableOpacity
-            onPress={handleChangeImage}
-            className="bg-blue-600 p-2 rounded-lg"
+            onPress={formData.photo ? handleRemoveImage : handleChangeImage}
+            className="bg-blue-600 rounded-lg p-3 flex-row items-center justify-center"
           >
-            <Text className="text-white text-center">Choose Image</Text>
+            <Icon
+              name={formData.photo ? "delete" : "add-a-photo"}
+              size={24}
+              color="white"
+            />
+            <Text className="text-white ml-2">
+              {formData.photo ? "Remove Photo" : "Add Photo"}
+            </Text>
           </TouchableOpacity>
-          {formData.photo && (
-            <View className="mt-2">
-              <Image
-                source={{ uri: `data:image/jpeg;base64,${formData.photo}` }}
-                className="w-32 h-32 mt-2 rounded-lg"
-              />
-              <TouchableOpacity onPress={handleRemoveImage}>
-                <Text className="text-red-600 mt-2">Remove Image</Text>
-              </TouchableOpacity>
-            </View>
-          )}
         </View>
 
         {/* Submit Button */}
         <TouchableOpacity
           onPress={handleSubmit}
-          className="bg-blue-600 p-4 rounded-lg mb-10"
+          className="bg-blue-600 rounded-lg p-4 mt-4"
         >
           <Text className="text-white text-center text-lg font-bold">
             Update ID Card

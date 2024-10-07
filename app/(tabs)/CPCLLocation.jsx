@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   Image,
   Linking,
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
 import { images } from "../../constants/images";
+import * as Location from "expo-location";
 
 const locations = [
   {
@@ -20,7 +22,7 @@ const locations = [
     phone: "+91 44 2594 4000",
     email: "manali@cpcl.co.in",
     description: "Main refinery complex with a capacity of 10.5 MMTPA.",
-    coordinates: { latitude: 13.162068, longitude: 80.269695 }, // Example coordinates
+    coordinates: { latitude: 13.162068, longitude: 80.269695 },
   },
   {
     id: 2,
@@ -29,7 +31,7 @@ const locations = [
     phone: "+91 4365 256 800",
     email: "cbr@cpcl.co.in",
     description: "Secondary refinery with a capacity of 1 MMTPA.",
-    coordinates: { latitude: 10.7663, longitude: 79.8345 }, // Example coordinates
+    coordinates: { latitude: 10.7663, longitude: 79.8345 },
   },
   {
     id: 3,
@@ -38,7 +40,7 @@ const locations = [
     phone: "+91 44 2434 6807",
     email: "corporate@cpcl.co.in",
     description: "CPCL headquarters and administrative center.",
-    coordinates: { latitude: 13.0377, longitude: 80.2634 }, // Example coordinates
+    coordinates: { latitude: 13.0377, longitude: 80.2634 },
   },
   {
     id: 4,
@@ -48,36 +50,37 @@ const locations = [
     email: "rnd@cpcl.co.in",
     description:
       "Center for innovation and technological advancements in refining.",
-    coordinates: { latitude: 13.162, longitude: 80.269 }, // Example coordinates
+    coordinates: { latitude: 13.162, longitude: 80.269 },
   },
 ];
 
-const Location = () => {
-  const [selectedLocation, setSelectedLocation] = useState({
-    latitude: 13.162068145057114,
-    longitude: 80.26969585183697,
-    title: "Corporate and Registered Office",
-    description: "Chennai Petroleum Corporation Ltd",
-    address: "Manali, Chennai, Tamil Nadu 600068",
-    phone: "+91 44 2594 4000",
-    email: "manali@cpcl.co.in",
-  });
-
+const CPCLLocation = () => {
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const navigation = useNavigation();
   const mapRef = useRef(null);
+  const [locationPermission, setLocationPermission] = useState(null);
+  const [currentPosition, setCurrentPosition] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === "granted") {
+        setLocationPermission(true);
+        const location = await Location.getCurrentPositionAsync({});
+        setCurrentPosition(location.coords); // Store user's current location
+      } else {
+        setLocationPermission(false);
+        Alert.alert(
+          "Location Permission",
+          "Permission to access location was denied."
+        );
+      }
+    })();
+  }, []);
 
   const handleLocationSelect = (location) => {
     if (location.coordinates) {
-      setSelectedLocation({
-        latitude: location.coordinates.latitude,
-        longitude: location.coordinates.longitude,
-        title: location.name,
-        description: location.description,
-        address: location.address,
-        phone: location.phone,
-        email: location.email,
-      });
-
+      setSelectedLocation(location);
       if (mapRef.current) {
         mapRef.current.animateToRegion(
           {
@@ -94,10 +97,17 @@ const Location = () => {
     }
   };
 
-  const handleGetDirections = () => {
-    const { latitude, longitude } = selectedLocation;
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
-    Linking.openURL(url);
+  const handleGetDirections = async () => {
+    if (selectedLocation) {
+      const { latitude, longitude } = selectedLocation.coordinates;
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("Error", "Unable to open directions in Maps.");
+      }
+    }
   };
 
   return (
@@ -106,11 +116,11 @@ const Location = () => {
         <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <Icon name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        <Text className="text-white text-2xl font-bold ">CPCL Location</Text>
-        <Image source={images.smallLogo} className="w-10 h-10 " />
+        <Text className="text-white text-2xl font-bold">CPCL Location</Text>
+        <Image source={images.smallLogo} className="w-10 h-10" />
       </View>
 
-      <ScrollView className="flex-1 px-4 py-8 ">
+      <ScrollView className="flex-1 px-4 py-8">
         <View className="rounded-lg">
           <View className="bg-blue-600 p-6 rounded-lg">
             <Text className="text-xl font-semibold text-white">
@@ -118,7 +128,7 @@ const Location = () => {
             </Text>
           </View>
           <View className="py-6">
-            <View className="flex-row flex-wrap justify-between ">
+            <View className="flex-row flex-wrap justify-between">
               {locations.map((location) => (
                 <TouchableOpacity
                   key={location.id}
@@ -138,33 +148,33 @@ const Location = () => {
         </View>
 
         {selectedLocation && (
-          <View className=" bg-white shadow-lg rounded-lg overflow-hidden">
+          <View className="bg-white shadow-lg rounded-lg overflow-hidden">
             <View className="bg-blue-600 p-6 rounded-lg">
               <Text className="text-xl font-semibold text-white">
-                {selectedLocation.title}
+                {selectedLocation.name}
               </Text>
             </View>
             <View className="pb-6">
-              <MapView
-                ref={mapRef}
-                className="rounded-lg my-4"
-                style={{ height: 300, borderRadius: 8 }}
-                initialRegion={{
-                  latitude: selectedLocation.latitude,
-                  longitude: selectedLocation.longitude,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}
-              >
-                <Marker
-                  coordinate={{
-                    latitude: selectedLocation.latitude,
-                    longitude: selectedLocation.longitude,
+              {selectedLocation.coordinates && (
+                <MapView
+                  ref={mapRef}
+                  className="rounded-lg my-4"
+                  style={{ height: 300, borderRadius: 8 }}
+                  initialRegion={{
+                    latitude: selectedLocation.coordinates.latitude,
+                    longitude: selectedLocation.coordinates.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
                   }}
-                  title={selectedLocation.title}
-                  description={selectedLocation.description}
-                />
-              </MapView>
+                >
+                  <Marker
+                    coordinate={selectedLocation.coordinates}
+                    title={selectedLocation.name}
+                    description={selectedLocation.description}
+                  />
+                </MapView>
+              )}
+
               <View className="space-y-4 bg-blue-50 p-4 rounded-lg">
                 <View className="flex-row items-center">
                   <Icon name="location-on" size={20} color="#3B82F6" />
@@ -202,4 +212,4 @@ const Location = () => {
   );
 };
 
-export default Location;
+export default CPCLLocation;

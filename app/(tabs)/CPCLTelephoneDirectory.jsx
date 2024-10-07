@@ -8,6 +8,7 @@ import {
   Modal,
   Image,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { images } from "../../constants/images";
@@ -36,7 +37,7 @@ export default function TelephoneDirectory() {
   const navigation = useNavigation();
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Manage loading state
   const [filteredEmployees, setFilteredEmployees] = useState(users);
   const [sortColumn, setSortColumn] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
@@ -52,13 +53,13 @@ export default function TelephoneDirectory() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://192.168.249.56:3000/api/users");
+        const response = await fetch("https://cpcl.onrender.com/api/users");
         const data = await response.json();
         setUsers(data);
       } catch (error) {
         console.error(error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false when data is fetched
       }
     };
 
@@ -93,7 +94,7 @@ export default function TelephoneDirectory() {
     });
 
     setFilteredEmployees(filtered);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to the first page whenever filters are applied
   }, [searchTerm, selectedDepartments, selectedroles, users]);
 
   const handleSort = (column) => {
@@ -172,18 +173,22 @@ export default function TelephoneDirectory() {
     </View>
   );
 
+  // Loading Spinner when data is fetching
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (users.length === 0) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text>No users found.</Text>
+      <View className="bg-white flex-1">
+        <View className="flex-row justify-between items-center p-6 bg-blue-600">
+          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+            <Icon name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text className="text-white text-2xl font-bold">
+            Telephone Directory
+          </Text>
+          <Image source={images.smallLogo} className="w-10 h-10" />
+        </View>
+        <View className="flex-1 justify-center items-center bg-white">
+          <ActivityIndicator size="large" color="#2563eb" />
+        </View>
       </View>
     );
   }
@@ -202,6 +207,7 @@ export default function TelephoneDirectory() {
         <Image source={images.smallLogo} className="w-10 h-10" />
       </View>
 
+      {/* Search and Filters */}
       <View className="p-4">
         <View className="mb-4 ">
           <View className="bg-blue-600 px-6 py-4 rounded-lg">
@@ -246,6 +252,7 @@ export default function TelephoneDirectory() {
         </Text>
       </View>
 
+      {/* Directory Content */}
       <ScrollView horizontal className="px-4">
         <View>
           <View className="flex-row bg-blue-50 py-2 mb-2 p-4">
@@ -301,6 +308,7 @@ export default function TelephoneDirectory() {
         </View>
       </ScrollView>
 
+      {/* Pagination */}
       <View className="flex-row justify-center items-center py-4">
         {Array.from(
           { length: Math.ceil(filteredEmployees.length / employeesPerPage) },
@@ -324,6 +332,8 @@ export default function TelephoneDirectory() {
         )}
       </View>
 
+      {/* Modals */}
+      {/* Filter Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -409,6 +419,7 @@ export default function TelephoneDirectory() {
         </View>
       </Modal>
 
+      {/* Per Page Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -444,6 +455,7 @@ export default function TelephoneDirectory() {
         </View>
       </Modal>
 
+      {/* Employee Modal */}
       <Modal
         animationType="slide"
         transparent={true}

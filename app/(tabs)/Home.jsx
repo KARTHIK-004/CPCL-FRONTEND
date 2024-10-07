@@ -101,7 +101,7 @@ export default function Home() {
           const { prno } = decodedToken;
 
           const response = await axios.get(
-            `http://192.168.249.56:3000/profile/${prno}`
+            `https://cpcl.onrender.com/profile/${prno}`
           );
           if (response.status === 200) {
             setProfileDetails(response.data.data);
@@ -134,7 +134,7 @@ export default function Home() {
             try {
               await AsyncStorage.removeItem("userToken");
               Alert.alert("Success", "You have been logged out.");
-              router.push("sign-up");
+              router.push("Login");
             } catch (error) {
               Alert.alert("Error", "An error occurred while logging out.");
               console.error("Logout Error: ", error);
@@ -199,42 +199,8 @@ export default function Home() {
         <View className="mb-4">
           <Text className="text-2xl font-bold text-blue-600">
             Welcome back,
-            <Text className="text-red-500">{profileDetails?.name}</Text>
+            <Text className="text-blue-600"> {profileDetails?.name}</Text>
           </Text>
-
-          <View className="bg-blue-50 p-4 mt-4 rounded-md">
-            <Text className="text-xl font-bold text-blue-600">Daily Tips</Text>
-            <View className="bg-blue-50 p-4 mt-2 rounded-md">
-              <Text className="text-blue-600">
-                <Text className="text-red-500">• </Text> Start your day with a
-                clear plan!
-              </Text>
-              <Text className="text-blue-600">
-                <Text className="text-red-500">• </Text> Take regular breaks to
-                stay productive!
-              </Text>
-              <Text className="text-blue-600">
-                <Text className="text-red-500">• </Text> Stay hydrated
-                throughout the day!
-              </Text>
-            </View>
-
-            <View className="mb-4">
-              <Text className="text-xl font-bold text-blue-600">
-                Safety Guidelines
-              </Text>
-              <View className="bg-blue-50 p-4 mt-2 rounded-md">
-                <Text className="text-blue-600">
-                  <Text className="text-red-500">• </Text> Report any safety
-                  hazards immediately.
-                </Text>
-                <Text className="text-blue-700">
-                  <Text className="text-red-500">• </Text> Follow emergency
-                  protocol during any emergency.
-                </Text>
-              </View>
-            </View>
-          </View>
         </View>
         {/* Carousel */}
         <View className="rounded-lg mb-2">
@@ -264,7 +230,7 @@ export default function Home() {
           />
 
           {/* Render dots below the carousel */}
-          <View className="flex-row justify-center mt-2">
+          <View className="flex-row justify-center my-2">
             {images.map((_, index) => (
               <View
                 key={index}
@@ -280,7 +246,7 @@ export default function Home() {
           <Text className="text-xl font-semibold text-blue-600 mb-4">
             Quick Actions
           </Text>
-          <View className="flex-row flex-wrap">
+          <View className="flex-row flex-wrap mb-4">
             {navItems.map((item, index) => (
               <TouchableOpacity
                 key={index}

@@ -14,9 +14,11 @@ const SearchResult = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await fetch(`http://192.168.249.56:3000/search?name=${name}&prno=${prNumber}&department=${department}`);
+        const response = await fetch(
+          `https://cpcl.onrender.com/search?name=${name}&prno=${prNumber}&department=${department}`
+        );
         const result = await response.json();
-        if (result.status === 'ok') {
+        if (result.status === "ok") {
           setEmployees(result.data);
         } else {
           console.error("Error fetching employees:", result.data);
@@ -33,7 +35,9 @@ const SearchResult = () => {
     <ScrollView className="bg-[#F2F2F2] flex-1">
       {/* Header */}
       <View className="flex-row justify-between items-center p-6 bg-white">
-        <TouchableOpacity onPress={() => navigation.navigate("EmployeeDirectory")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("EmployeeDirectory")}
+        >
           <Icon name="arrow-back" size={24} className="text-black" />
         </TouchableOpacity>
         <Text className="text-[#2563eb] text-2xl font-bold">Search Result</Text>
@@ -55,7 +59,9 @@ const SearchResult = () => {
               />
               {/* Text Section */}
               <View className="flex-1">
-                <Text className="text-lg font-bold text-[#2563eb]">{employee.name}</Text>
+                <Text className="text-lg font-bold text-[#2563eb]">
+                  {employee.name}
+                </Text>
                 <Text>{employee.prno}</Text>
                 <Text className="uppercase">{employee.department}</Text>
                 <Text>{employee.mobileNo}</Text>
@@ -64,7 +70,9 @@ const SearchResult = () => {
           ))
         ) : (
           <View className="flex-1 justify-center items-center p-4">
-            <Text className="text-center text-gray-500 text-lg">No results found</Text>
+            <Text className="text-center text-gray-500 text-lg">
+              No results found
+            </Text>
           </View>
         )}
       </ScrollView>
