@@ -1,50 +1,142 @@
-# Welcome to your Expo app 👋
+Here’s a **professional README.md** you can use for your **CPCL-FRONTEND** mobile app project (Expo/React Native) based on what’s visible in the repo (it’s an Expo project created with `create-expo-app`) and typical patterns for such apps. ([GitHub][1])
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+---
 
-## Get started
+```markdown
+# CPCL Mobile App (Frontend)
 
-1. Install dependencies
+A cross-platform **mobile application frontend** for Chennai Petroleum Corporation Limited (CPCL), built using **Expo (React Native)**.  
+This app is part of the CPCL system and interacts with backend services to provide CPCL users with mobile access to core features.
 
-   ```bash
-   npm install
-   ```
+> 📱 Built with Expo — works on **Android, iOS, and Web** (via Expo Go).
 
-2. Start the app
+---
 
-   ```bash
-    npx expo start
-   ```
+## 🚀 Features
 
-In the output, you'll find options to open the app in a
+- 📲 Cross-platform UI using React Native  
+- ⚡ Fast development with Expo tooling  
+- 🎨 Tailwind CSS for styling  
+- 📁 Organized structure (app, assets, constants)  
+- 📡 API communication (integrate later with CPCL backend)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📦 Tech Stack
 
-## Get a fresh project
+| Technology | Purpose |
+|------------|---------|
+| **React Native** | UI framework |
+| **Expo** | App build & development |
+| **Tailwind CSS** | Styling |
+| **JavaScript / JSX** | App logic |
+| **ESLint / Prettier** | Code quality (optional) |
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
+## 📁 Project Structure
+
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+├── app/
+│   └── …                # Source modules & screens
+├── assets/images/       # Images & icons
+├── constants/           # App constants & config
+├── package.json
+├── babel.config.js
+├── tailwind.config.js
+├── tsconfig.json
+└── eas.json             # Expo Application Services config
 
-## Learn more
+````
 
-To learn more about developing your project with Expo, look at the following resources:
+---
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 🛠️ Setup & Installation
 
-## Join the community
+Make sure you have **Node.js**, **npm/yarn**, and **Expo CLI** installed.
 
-Join our community of developers creating universal apps.
+1. **Clone the repo**
+   ```sh
+   git clone https://github.com/KARTHIK-004/CPCL-FRONTEND.git
+   cd CPCL-FRONTEND
+````
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+2. **Install dependencies**
+
+   ```sh
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Start Expo**
+
+   ```sh
+   npx expo start
+   ```
+
+4. Use **Expo Go** on your phone or an emulator to run the app.
+
+---
+
+## 📱 Development
+
+### 🧪 Run on device
+
+* Scan the QR in the Expo DevTools
+* Use **Android Studio / iOS Simulator**
+
+### 🔁 Live reload
+
+Code changes hot-reload automatically via Expo.
+
+---
+
+## 🧩 Environment Variables
+
+If you plan to connect to backend APIs or use API keys:
+
+* Create a `.env` file
+* Add variables like:
+
+  ```env
+  API_BASE_URL=https://api.cpcl.example
+  ```
+* Install `react-native-dotenv` or similar if needed
+
+---
+
+## 📈 Next Steps / TODO
+
+✅ Basic Expo project setup
+🔲 Build screens & navigations
+🔲 Integrate real CPCL backend APIs
+🔲 Authentication support
+🔲 State management (Redux / Context API)
+🔲 Push notifications
+🔲 Deployment to App Store & Play Store
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the project
+2. Create a feature branch
+
+   ```sh
+   git checkout -b feature/my-feature
+   ```
+3. Commit & push
+4. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is open-source (add your chosen license here, e.g., MIT)
+
+---
+
